@@ -4,9 +4,12 @@ import { authConfig } from './auth.config'
 import { z } from 'zod'
 import { getStringFromBuffer } from './lib/utils'
 import { getUser } from './app/login/actions'
+import client from './lib/db'
+import { MongoDBAdapter } from '@auth/mongodb-adapter'
 
 export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
+  adapter: MongoDBAdapter(client),
   providers: [
     Credentials({
       async authorize(credentials) {
