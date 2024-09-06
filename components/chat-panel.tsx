@@ -36,9 +36,9 @@ export function ChatPanel({
 
   const exampleMessages = [
     {
-      heading: 'What are the',
-      subheading: 'trending memecoins today?',
-      message: `What are the trending memecoins today?`
+      heading: 'I want to loose weight',
+      subheading: 'describe your goals, get plans to follow',
+      message: `I want to loose weight`
     },
     {
       heading: 'What is the price of',
@@ -131,7 +131,7 @@ export function ChatPanel({
 
         <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
           <PromptForm input={input} setInput={setInput} />
-          <FooterText className="hidden sm:block" />
+          <FooterText />
         </div>
       </div>
     </div>
