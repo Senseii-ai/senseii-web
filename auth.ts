@@ -2,8 +2,8 @@ import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { authConfig } from './auth.config'
 import { z } from 'zod'
-import { getStringFromBuffer } from './lib/utils'
 import { getUser } from './app/login/actions'
+import { hashPassword } from './lib/crypt/crypt'
 
 export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -22,20 +22,12 @@ export const { auth, signIn, signOut } = NextAuth({
           const user = await getUser(email)
 
           if (!user) return null
-
-          const encoder = new TextEncoder()
-          const saltedPassword = encoder.encode(password + user.salt)
-          const hashedPasswordBuffer = await crypto.subtle.digest(
-            'SHA-256',
-            saltedPassword
-          )
-          const hashedPassword = getStringFromBuffer(hashedPasswordBuffer)
-
-          if (hashedPassword === user.password) {
+          // verify password
+          const hashedPassword = await hashPassword(password, user.salt)
+          if (user.password === hashedPassword) {
             return user
-          } else {
-            return null
           }
+          return null
         }
 
         return null

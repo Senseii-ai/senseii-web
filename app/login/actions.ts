@@ -4,11 +4,29 @@ import { signIn } from '@/auth'
 import { User } from '@/lib/types'
 import { AuthError } from 'next-auth'
 import { z } from 'zod'
-import { kv } from '@vercel/kv'
 import { ResultCode } from '@/lib/utils'
 
-export async function getUser(email: string) {
-  const user = await kv.hgetall<User>(`user:${email}`)
+export async function getUser(email: string): Promise<User | undefined> {
+  const response = await fetch('http://localhost:9090/api/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email: email
+    })
+  })
+
+  const { data } = await response.json()
+  if (!data) {
+    return undefined
+  }
+  const user: User = {
+    id: data._id,
+    email: data.email,
+    password: data.password,
+    salt: data.salt
+  }
   return user
 }
 

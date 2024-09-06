@@ -3,36 +3,36 @@
 import { signIn } from '@/auth'
 import { ResultCode, getStringFromBuffer } from '@/lib/utils'
 import { z } from 'zod'
-import { kv } from '@vercel/kv'
-import { getUser } from '../login/actions'
 import { AuthError } from 'next-auth'
+import { genSaltSync } from 'bcryptjs'
 
 export async function createUser(
   email: string,
-  hashedPassword: string,
+  password: string,
   salt: string
 ) {
-  const existingUser = await getUser(email)
+  const response = await fetch('http://localhost:9090/api/signup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email: email,
+      password: password,
+      salt: salt
+    })
+  })
 
-  if (existingUser) {
-    return {
-      type: 'error',
-      resultCode: ResultCode.UserAlreadyExists
-    }
-  } else {
-    const user = {
-      id: crypto.randomUUID(),
-      email,
-      password: hashedPassword,
-      salt
-    }
-
-    await kv.hmset(`user:${email}`, user)
-
+  const user = await response.json()
+  if (user.type === 'success') {
     return {
       type: 'success',
       resultCode: ResultCode.UserCreated
     }
+  }
+  return {
+    type: 'failed',
+    resultCode: ResultCode.UnknownError
   }
 }
 
@@ -59,19 +59,9 @@ export async function signup(
     })
 
   if (parsedCredentials.success) {
-    const salt = crypto.randomUUID()
-
-    const encoder = new TextEncoder()
-    const saltedPassword = encoder.encode(password + salt)
-    const hashedPasswordBuffer = await crypto.subtle.digest(
-      'SHA-256',
-      saltedPassword
-    )
-    const hashedPassword = getStringFromBuffer(hashedPasswordBuffer)
-
+    const salt = genSaltSync(10)
     try {
-      const result = await createUser(email, hashedPassword, salt)
-
+      const result = await createUser(email, password, salt)
       if (result.resultCode === ResultCode.UserCreated) {
         await signIn('credentials', {
           email,
