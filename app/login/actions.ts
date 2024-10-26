@@ -21,8 +21,9 @@ export async function getUser(email: string): Promise<User | undefined> {
   if (!data) {
     return undefined
   }
+
   const user: User = {
-    id: data._id,
+    id: data.id,
     email: data.email,
     password: data.password,
     salt: data.salt
@@ -40,9 +41,11 @@ export async function authenticate(
   formData: FormData
 ): Promise<Result | undefined> {
   try {
+    // destructure the form data
     const email = formData.get('email')
     const password = formData.get('password')
 
+    // validate the credentials
     const parsedCredentials = z
       .object({
         email: z.string().email(),
@@ -54,7 +57,7 @@ export async function authenticate(
       })
 
     if (parsedCredentials.success) {
-      await signIn('credentials', {
+      const serverResponse = await signIn('credentials', {
         email,
         password,
         redirect: false
