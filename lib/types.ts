@@ -39,3 +39,5 @@ export interface User extends Record<string, any> {
   password: string
   salt: string
 }
+
+export const BaseUrl = 'http:localhost:9090/api'

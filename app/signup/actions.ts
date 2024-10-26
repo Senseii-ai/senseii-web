@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { AuthError } from 'next-auth'
 import { genSaltSync } from 'bcryptjs'
 
+// TODO: replace the hardcoded API URLs with env variables
 export async function createUser(
   email: string,
   password: string,

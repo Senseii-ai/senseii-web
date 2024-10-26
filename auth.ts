@@ -9,7 +9,14 @@ export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
+      credentials: {
+        email: {},
+        password: {}
+      },
       async authorize(credentials) {
+        console.log('Credentials', credentials.email)
+
+        // Parse the data being sent by the form
         const parsedCredentials = z
           .object({
             email: z.string().email(),
