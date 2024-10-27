@@ -27,7 +27,6 @@ async function submitUserMessage(content: string) {
 
   const aiState = getMutableAIState<typeof AI>()
   const { user } = (await auth()) as Session
-  console.log('This is the user', user)
   aiState.update({
     ...aiState.get(),
     messages: [
@@ -42,9 +41,8 @@ async function submitUserMessage(content: string) {
 
   // TODO: Implement the streamable response later
   // let textStream: undefined | ReturnType<typeof createStreamableValue<string>>
-  console.log('SENDING THESE TO BACKEND', content, aiState.get().chatId)
 
-  const response = await sendUserMessage(
+  const response: string = await sendUserMessage(
     user?.id as string,
     aiState.get().chatId,
     content
