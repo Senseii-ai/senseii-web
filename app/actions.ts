@@ -2,13 +2,10 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-// import { kv } from '@vercel/kv'
-//
 import { auth } from '@/auth'
 import { BaseUrl, Chat } from '@/lib/types'
 import { httpGet } from '@/lib/api/http'
-import { CoreAssistantMessage, Message } from 'ai'
-//
+
 export async function getChats(userId?: string | null) {
   const session = await auth()
 
@@ -23,60 +20,12 @@ export async function getChats(userId?: string | null) {
   }
 
   try {
-    const url = `${BaseUrl}/threads/user/${userId}/threads`
-    const data = await httpGet(url)
-    const randomMessage = [
-      {
-        id: '10b3dacb-fffd-439f-aaff-ba7f12023c37',
-        role: 'assistant',
-        content: 'random Message'
-      }
-    ]
-    const response = data.map(item => {
-      const chat: Chat = {
-        id: item.id,
-        title: item.summary,
-        createdAt: new Date(),
-        userId: userId,
-        path: 'what is this',
-        messages: randomMessage
-      }
-    })
-
+    const url = `${BaseUrl}/chat/user/${userId}/chats`
+    const { data } = await httpGet(url)
+    return data as Chat[]
+  } catch (error) {
     return []
-  } catch (error) {}
-
-  return []
-
-  // try {
-  //   const data: IChatListRespnse[] = await httpGet(url)
-  //   console.log('This is the chats data', data)
-  //
-  //   const results: Chat[] = data.map((item, index) => {
-  //     const chat: Chat = {
-  //       id: item.id,
-  //       title: item.summary,
-  //       createdAt: item.createdAt,
-  //       userId: userId,
-  //       path: 'not sure what is this',
-  //       messages: new Message[]
-  //     }
-  //   })
-  //   // const pipeline = kv.pipeline()
-  //   // const chats: string[] = await kv.zrange(`user:chat:${userId}`, 0, -1, {
-  //   //   rev: true
-  //   // })
-  //   //
-  //   // for (const chat of chats) {
-  //   //   pipeline.hgetall(chat)
-  //   // }
-  //   //
-  //   // const results = await pipeline.exec()
-  //
-  //   return results as Chat[]
-  // } catch (error) {
-  //   return []
-  // }
+  }
 }
 
 export async function getChat(id: string, userId: string) {
@@ -106,8 +55,6 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
       error: 'Unauthorized'
     }
   }
-
-  console.log('I am a placeholder')
 
   // Convert uid to string for consistent comparison with session.user.id
   // const uid = String(await kv.hget(`chat:${id}`, 'userId'))
