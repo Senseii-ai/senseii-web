@@ -1,6 +1,11 @@
 import 'server-only'
 
-import { createAI, getMutableAIState, getAIState } from 'ai/rsc'
+import {
+  createAI,
+  getMutableAIState,
+  getAIState,
+  createStreamableValue
+} from 'ai/rsc'
 
 import {
   spinner,
@@ -39,26 +44,23 @@ async function submitUserMessage(content: string) {
     ]
   })
 
-  // TODO: Implement the streamable response later
-  // let textStream: undefined | ReturnType<typeof createStreamableValue<string>>
-
-  const response: string = await sendUserMessage(
+  const stream = await sendUserMessage(
     user?.id as string,
     aiState.get().chatId,
     content
   )
-  if (response) {
-    const result = {
-      value: (
-        <BotCard>
-          <BotMessage content={response} />
-        </BotCard>
-      )
-    }
-    return {
-      id: nanoid(),
-      display: result.value
-    }
+
+  const readableStream = createStreamableValue(stream)
+  const result = {
+    value: (
+      <BotCard>
+        <BotMessage content={readableStream.value} />
+      </BotCard>
+    )
+  }
+  return {
+    id: nanoid(),
+    display: result.value
   }
 }
 

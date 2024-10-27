@@ -2,7 +2,7 @@ import { StreamableValue, readStreamableValue } from 'ai/rsc'
 import { useEffect, useState } from 'react'
 
 export const useStreamableText = (
-  content: string | StreamableValue<string>
+  content: StreamableValue<string> | string
 ) => {
   const [rawContent, setRawContent] = useState(
     typeof content === 'string' ? content : ''
@@ -14,7 +14,7 @@ export const useStreamableText = (
         let value = ''
         for await (const delta of readStreamableValue(content)) {
           if (typeof delta === 'string') {
-            setRawContent((value = value + delta))
+            setRawContent((value = delta))
           }
         }
       }
