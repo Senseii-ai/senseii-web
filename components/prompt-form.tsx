@@ -17,6 +17,7 @@ import {
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { nanoid } from 'nanoid'
 import { useRouter } from 'next/navigation'
+import { refreshHistory } from '@/app/actions'
 
 export function PromptForm({
   input,
