@@ -11,12 +11,10 @@ import {
   spinner,
   BotCard,
   BotMessage,
-  SystemMessage,
   Stock,
   Purchase
 } from '@/components/stocks'
 
-import { z } from 'zod'
 import { Events } from '@/components/stocks/events'
 import { Stocks } from '@/components/stocks/stocks'
 import { nanoid } from '@/lib/utils'
@@ -26,6 +24,7 @@ import { Chat, Message } from '@/lib/types'
 import { auth } from '@/auth'
 import { sendUserMessage } from '@/app/api/chat'
 import { Session } from 'next-auth'
+import React from 'react'
 
 async function submitUserMessage(content: string) {
   'use server'
@@ -106,9 +105,9 @@ export const AI = createAI<AIState, UIState>({
 
       const createdAt = new Date()
       const userId = session.user.id as string
-      const path = `/chat/${chatId}`
+      const path = `${chatId}`
 
-      const firstMessageContent = messages[0].content as string
+      const firstMessageContent = messages[0]?.content as string
       const title = firstMessageContent.substring(0, 100)
 
       const chat: Chat = {
@@ -127,7 +126,53 @@ export const AI = createAI<AIState, UIState>({
   }
 })
 
+// VercelMessageFromOpenAIMessage converts OpenAI message to Vercel Supported Message
+const VercelMessageFromOpenAIMessage = (message: any) => {
+  let newMessage: Message
+  if (message.content[0].type === 'text') {
+    if (message.role === 'assistant') {
+      newMessage = {
+        id: message.id,
+        content: message.content[0].text.value,
+        role: message.role
+      }
+    } else {
+      newMessage = {
+        id: message.id,
+        role: 'user',
+        content: message.content[0].text.value
+      }
+    }
+    return newMessage
+  }
+}
+
 export const getUIStateFromAIState = (aiState: Chat) => {
+  // write logic here to convert OpenAI messages into Vercel Supported Messages
+  const aiStateMessages = aiState.messages
+    .filter(message => message.role != 'system')
+    .reverse()
+
+  return aiStateMessages.map((message, index) => {
+    const vercelAIMessage = VercelMessageFromOpenAIMessage(message) as Message
+    return {
+      id: vercelAIMessage?.id,
+      display:
+        message.role === 'user' ? (
+          <UserMessage>
+            {React.createElement(
+              'div',
+              null,
+              vercelAIMessage?.content as string
+            )}
+          </UserMessage>
+        ) : vercelAIMessage?.role === 'assistant' &&
+          typeof vercelAIMessage.content === 'string' ? (
+          <BotMessage content={vercelAIMessage.content} />
+        ) : null
+    }
+  })
+  // TODO: keeping this for future reference.
   return aiState.messages
     .filter(message => message.role !== 'system')
     .map((message, index) => ({

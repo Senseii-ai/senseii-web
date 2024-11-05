@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils'
 interface SidebarItemProps {
   index: number
   chat: Chat
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 export function SidebarItem({ index, chat, children }: SidebarItemProps) {
@@ -118,7 +118,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
           </span>
         </div>
       </Link>
-      {isActive && <div className="absolute right-2 top-1">{children}</div>}
+      {/* {isActive && <div className="absolute right-2 top-1">{children}</div>} */}
     </motion.div>
   )
 }

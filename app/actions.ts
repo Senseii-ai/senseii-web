@@ -37,14 +37,13 @@ export async function getChat(id: string, userId: string) {
     }
   }
 
-  const url = `${BaseUrl}/user/${userId}/chat/${id}`
-  const chat = await httpGet(url)
+  const url = `${BaseUrl}/chat/user/${userId}/chat/${id}`
+  const { data } = await httpGet(url)
 
-  if (!chat || (userId && chat.userId !== userId)) {
+  if (!data || (userId && data.userId !== userId)) {
     return null
   }
-
-  return chat
+  return data
 }
 
 export async function removeChat({ id, path }: { id: string; path: string }) {
@@ -135,22 +134,6 @@ export async function shareChat(id: string) {
   return payload
 }
 
-// export async function saveChat(chat: Chat) {
-//   const session = await auth()
-//
-//   if (session && session.user) {
-//     const pipeline = kv.pipeline()
-//     pipeline.hmset(`chat:${chat.id}`, chat)
-//     pipeline.zadd(`user:chat:${chat.userId}`, {
-//       score: Date.now(),
-//       member: `chat:${chat.id}`
-//     })
-//     await pipeline.exec()
-//   } else {
-//     return
-//   }
-// }
-//
 export async function refreshHistory(path: string) {
   redirect(path)
 }
