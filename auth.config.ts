@@ -20,6 +20,8 @@ export const authConfig = {
 
       return true
     },
+
+    // jwt transforms the token after authentication.
     async jwt({ token, user }) {
       if (user) {
         token = { ...token, id: user.id }
@@ -27,6 +29,7 @@ export const authConfig = {
 
       return token
     },
+    // session transforms the sessoin object.
     async session({ session, token }) {
       if (token) {
         const { id } = token as { id: string }
