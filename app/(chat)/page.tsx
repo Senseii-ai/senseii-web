@@ -4,6 +4,7 @@ import { AI } from '@/lib/chat/actions'
 import { auth } from '@/auth'
 import { Session } from '@/lib/types'
 import { redirect } from 'next/navigation'
+import { Jwt } from 'jsonwebtoken'
 
 export const metadata = {
   title: 'Next.js AI Chatbot'

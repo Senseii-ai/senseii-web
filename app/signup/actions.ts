@@ -1,10 +1,10 @@
 'use server'
 
 import { signIn } from '@/auth'
-import { ResultCode, getStringFromBuffer } from '@/lib/utils'
-import { z } from 'zod'
-import { AuthError } from 'next-auth'
-import { genSaltSync } from 'bcryptjs'
+import { ResultCode } from '@/lib/utils'
+import { authAPI } from '@/lib/api/auth'
+import { createUserSchema, HTTP } from '@senseii/types'
+import { Axios, AxiosError } from 'axios'
 
 // TODO: replace the hardcoded API URLs with env variables
 export async function createUser(
@@ -48,41 +48,29 @@ export async function signup(
 ): Promise<Result | undefined> {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
-
-  const parsedCredentials = z
-    .object({
-      email: z.string().email(),
-      password: z.string().min(6)
-    })
-    .safeParse({
-      email,
-      password
-    })
+  const parsedCredentials = createUserSchema.safeParse({ email, password })
 
   if (parsedCredentials.success) {
-    const salt = genSaltSync(10)
     try {
-      const result = await createUser(email, password, salt)
-      if (result.resultCode === ResultCode.UserCreated) {
+      const result = await authAPI.signUp(parsedCredentials.data)
+      if (result.resultCode === HTTP.STATUS.CREATED) {
         await signIn('credentials', {
           email,
           password,
           redirect: false
         })
       }
-
-      return result
     } catch (error) {
-      if (error instanceof AuthError) {
-        switch (error.type) {
-          case 'CredentialsSignin':
+      if (error instanceof AxiosError) {
+        switch (error.code) {
+          case AxiosError.ERR_BAD_REQUEST:
             return {
-              type: 'error',
+              type: "error",
               resultCode: ResultCode.InvalidCredentials
             }
           default:
             return {
-              type: 'error',
+              type: "error",
               resultCode: ResultCode.UnknownError
             }
         }
