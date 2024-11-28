@@ -1,5 +1,6 @@
-import { ApiError, CreateUserRequest, HTTP, ResultCode, UserLoginDTO, userLoginResponseDTO } from "@senseii/types";
-import { axiosInstance } from "./http";
+import { ResultCode, SignUpFormSchema, UserLoginDTO, userLoginResponseDTO } from "@senseii/types";
+import { axiosInstance, SuccessResponseSchema } from "./http";
+import { z, ZodError } from "zod";
 
 export const apiEndpoints = {
   signUp: {
@@ -10,38 +11,32 @@ export const apiEndpoints = {
   }
 }
 
-// TODO: Error handling here?
 export const authAPI = {
-  signUp: async (data: CreateUserRequest) => {
+  signUp: async (data: SignUpFormSchema) => {
     try {
       const response = await axiosInstance.post("/auth/signup", data)
-      if (response.status === HTTP.STATUS.OK) {
-        return {
-          resultCode: HTTP.STATUS.CREATED
-        }
-      }
-      const responseData: ApiError = response.data
-      return {
-        resultCode: responseData.code,
-        error: responseData.message
-      }
+      const successResponse = SuccessResponseSchema(z.string()).parse(response)
+      return successResponse
     } catch (error) {
-      console.error("error calling api", error)
+      if (error instanceof ZodError) {
+        console.error("", error.name)
+        return null
+      }
       throw error
     }
   },
   signIn: async (creds: UserLoginDTO) => {
     try {
-      const response = await axiosInstance.post("/auth/login", creds)
-      if (response.status === HTTP.STATUS.OK) {
-        const validResult = apiEndpoints.signIn.response.safeParse(response.data.data)
-        if (!validResult.success) {
-          throw validResult.error
-        }
-        return validResult.data
-      }
+      const data = await axiosInstance.post("/auth/login", creds)
+      const successResponse = SuccessResponseSchema(userLoginResponseDTO).parse(data)
+      return successResponse.data
+
     } catch (error) {
-      console.error("error calling api", error)
+      if (error instanceof ZodError) {
+        console.error("validation error", error.name)
+        return null
+      }
+      // error occured on the API layer.
       throw error
     }
   }
