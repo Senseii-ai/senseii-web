@@ -1,45 +1,64 @@
-import type { NextAuthConfig } from 'next-auth'
+import type { DefaultSession, NextAuthConfig } from "next-auth";
+import "next-auth/jwt";
+import Credentials from "next-auth/providers/credentials";
 
-export const authConfig = {
-  secret: process.env.AUTH_SECRET,
-  pages: {
-    signIn: '/login',
-    newUser: '/signup'
-  },
-  callbacks: {
-    async authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user
-      const isOnLoginPage = nextUrl.pathname.startsWith('/login')
-      const isOnSignupPage = nextUrl.pathname.startsWith('/signup')
+import { userLoginDTO } from "@senseii/types";
+import { authAPI } from "./lib/api/auth";
 
-      if (isLoggedIn) {
-        if (isOnLoginPage || isOnSignupPage) {
-          return Response.redirect(new URL('/', nextUrl))
+declare module "next-auth" {
+  interface User {
+    accessToken: string;
+    refreshToken: string;
+  }
+
+  interface Session {
+    user: User & DefaultSession["user"];
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    accessToken: string;
+    refreshToken: string;
+  }
+}
+
+export default {
+  secret: process.env.NEXT_AUTH_SECRET,
+  providers: [
+    Credentials({
+      async authorize(credentials) {
+        const validatedFields = userLoginDTO.safeParse(credentials);
+        if (validatedFields.success) {
+          const { email, password } = validatedFields.data;
+          const response = await authAPI.signIn({ email: email, password: password })
+          console.log("API CALL WORKED, FINAL RESPONSE", response)
+
+          // OAuth was used to sign in.
+          if (!response) {
+            return null;
+          }
+          return response;
         }
-      }
-
-      return true
-    },
-
-    // jwt transforms the token after authentication.
+        return null;
+      },
+    }),
+  ],
+  callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token = { ...token, id: user.id }
-      }
-
-      return token
+        token = { ...token, accessToken: user.accessToken, refreshToken: user.refreshToken }
+      } return token
     },
+
     // session transforms the sessoin object.
     async session({ session, token }) {
+
       if (token) {
-        const { id } = token as { id: string }
-        const { user } = session
-
-        session = { ...session, user: { ...user, id } }
+        session.user.accessToken = token.accessToken
+        session.user.refreshToken = token.refreshToken
       }
-
       return session
     }
   },
-  providers: []
-} satisfies NextAuthConfig
+} satisfies NextAuthConfig;

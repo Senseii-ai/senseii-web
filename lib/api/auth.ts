@@ -1,5 +1,6 @@
-import { ApiError, CreateUserRequest, HTTP, ResultCode, UserLoginDTO, userLoginResponseDTO } from "@senseii/types";
-import { axiosInstance } from "./http";
+import { ApiError, CreateUserRequest, HTTP, ResultCode, userLoginDTO, UserLoginDTO, userLoginResponseDTO } from "@senseii/types";
+import { axiosInstance, SuccessResponseSchema } from "./http";
+import { ZodError } from "zod";
 
 export const apiEndpoints = {
   signUp: {
@@ -10,7 +11,6 @@ export const apiEndpoints = {
   }
 }
 
-// TODO: Error handling here?
 export const authAPI = {
   signUp: async (data: CreateUserRequest) => {
     try {
@@ -32,16 +32,18 @@ export const authAPI = {
   },
   signIn: async (creds: UserLoginDTO) => {
     try {
-      const response = await axiosInstance.post("/auth/login", creds)
-      if (response.status === HTTP.STATUS.OK) {
-        const validResult = apiEndpoints.signIn.response.safeParse(response.data.data)
-        if (!validResult.success) {
-          throw validResult.error
-        }
-        return validResult.data
-      }
+      const data = await axiosInstance.post("/auth/login", creds)
+      console.log("BACKEND RETURNED", data)
+      const successResponse = SuccessResponseSchema(userLoginResponseDTO).parse(data)
+      console.log("RETURNING THIS TO AUTH", successResponse.data)
+      return successResponse.data
+
     } catch (error) {
-      console.error("error calling api", error)
+      if (error instanceof ZodError) {
+        console.error("validation error", error.name)
+        return null
+      }
+      // error occured on the API layer. Or Validation error occured
       throw error
     }
   }
