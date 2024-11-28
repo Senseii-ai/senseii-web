@@ -1,23 +1,20 @@
 "use client"
 
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-
-export const signupFormSchema = z.object({
-  firstName: z.string().min(1, "first name is requied"),
-  lastName: z.string().min(1, "last name is required"),
-  email: z.string().email("invalid Email"),
-  password: z.string().min(6, "password should be at-least 6 characters long")
-})
-
-export type ISignupForm = z.infer<typeof signupFormSchema>
+import { SignUpFormSchema, signupFormSchema } from "@senseii/types";
+import { useState } from "react";
+import { signup } from "@/app/(auth)/signup/actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function SignupForm() {
-  const form = useForm<ISignupForm>({
+  const router = useRouter()
+  const [isPending, setIsPending] = useState<boolean>(false)
+  const form = useForm<SignUpFormSchema>({
     resolver: zodResolver(signupFormSchema),
     defaultValues: {
       firstName: "",
@@ -25,11 +22,22 @@ export default function SignupForm() {
       email: "",
       password: ""
     }
+  })
+  const handleSubmit = async (fields: SignUpFormSchema) => {
+    setIsPending(true)
+    const response = await signup(fields)
+    if (response?.status === "success") {
+      toast.success(response.message)
+      router.push("/login")
+      router.refresh()
+    } else {
+      toast.error(response?.message)
+      setIsPending(false)
+    }
   }
-  )
   return (
     <Form {...form}>
-      <form className="space-y-5">
+      <form className="space-y-5" method="post" onSubmit={form.handleSubmit(handleSubmit)}>
         <div>
           <FormField
             control={form.control}
@@ -38,7 +46,7 @@ export default function SignupForm() {
               <FormItem>
                 <FormLabel>First name</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input {...field} disabled={isPending} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -52,7 +60,7 @@ export default function SignupForm() {
               <FormItem>
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input {...field} disabled={isPending} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -66,7 +74,7 @@ export default function SignupForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input {...field} disabled={isPending} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -80,7 +88,7 @@ export default function SignupForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input {...field} type="password" />
+                  <Input {...field} type="password" disabled={isPending} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -88,7 +96,7 @@ export default function SignupForm() {
           />
 
         </div>
-        <Button className="w-full" type="submit">create account</Button>
+        <Button className="w-full" disabled={isPending} type="submit">create account</Button>
       </form>
     </Form>
   )

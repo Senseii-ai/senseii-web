@@ -1,6 +1,6 @@
-import { ApiError, CreateUserRequest, HTTP, ResultCode, UserLoginDTO, userLoginResponseDTO } from "@senseii/types";
+import { ResultCode, SignUpFormSchema, UserLoginDTO, userLoginResponseDTO } from "@senseii/types";
 import { axiosInstance, SuccessResponseSchema } from "./http";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 
 export const apiEndpoints = {
   signUp: {
@@ -12,21 +12,16 @@ export const apiEndpoints = {
 }
 
 export const authAPI = {
-  signUp: async (data: CreateUserRequest) => {
+  signUp: async (data: SignUpFormSchema) => {
     try {
       const response = await axiosInstance.post("/auth/signup", data)
-      if (response.status === HTTP.STATUS.OK) {
-        return {
-          resultCode: HTTP.STATUS.CREATED
-        }
-      }
-      const responseData: ApiError = response.data
-      return {
-        resultCode: responseData.code,
-        error: responseData.message
-      }
+      const successResponse = SuccessResponseSchema(z.string()).parse(response)
+      return successResponse
     } catch (error) {
-      console.error("error calling api", error)
+      if (error instanceof ZodError) {
+        console.error("", error.name)
+        return null
+      }
       throw error
     }
   },
