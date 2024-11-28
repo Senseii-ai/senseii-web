@@ -8,13 +8,12 @@ import {
   IconGitHub,
   IconNextChat,
   IconSeparator,
-  IconVercel
 } from '@/components/ui/icons'
 import { UserMenu } from '@/components/user-menu'
 import { SidebarMobile } from './sidebar-mobile'
 import { SidebarToggle } from './sidebar-toggle'
 import { ChatHistory } from './chat-history'
-import { Session } from '@/lib/types'
+import { Session } from 'next-auth'
 
 async function UserOrLogin() {
   const session = (await auth()) as Session

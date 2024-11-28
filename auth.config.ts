@@ -1,4 +1,4 @@
-import type { DefaultSession, NextAuthConfig } from "next-auth";
+import type { AuthError, DefaultSession, NextAuthConfig } from "next-auth";
 import "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
 
@@ -30,15 +30,19 @@ export default {
       async authorize(credentials) {
         const validatedFields = userLoginDTO.safeParse(credentials);
         if (validatedFields.success) {
-          const { email, password } = validatedFields.data;
-          const response = await authAPI.signIn({ email: email, password: password })
-          console.log("API CALL WORKED, FINAL RESPONSE", response)
 
-          // OAuth was used to sign in.
-          if (!response) {
-            return null;
+          try {
+            const { email, password } = validatedFields.data;
+            const response = await authAPI.signIn({ email: email, password: password })
+
+            // OAuth was used to sign in.
+            if (!response) {
+              return null;
+            }
+            return response;
+          } catch (error) {
+            return null
           }
-          return response;
         }
         return null;
       },

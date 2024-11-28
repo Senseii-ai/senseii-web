@@ -9,6 +9,7 @@ import { Button } from "./ui/button"
 import { useState } from "react"
 import { login } from "@/app/(auth)/login/actions"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 export default function LoginForm() {
   const router = useRouter()
@@ -22,16 +23,18 @@ export default function LoginForm() {
   })
 
   const handleSubmit = async (fields: UserLoginDTO) => {
-    try {
-      setPending(true)
-      const response = await login(fields)
-      if (response?.type === "success") {
-        setPending(false)
-        router.push("/")
-      }
-    } catch (error) {
+    setPending(true)
+    const response = await login(fields)
+    if (response?.status === "success") {
+      setPending(false)
+      toast.success(response.message)
+      router.push("/")
+      router.refresh()
+    } else {
+      toast.error(response.message)
       setPending(false)
     }
+
 
   }
   return (

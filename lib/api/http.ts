@@ -1,6 +1,4 @@
 import axios from "axios";
-import { HTTP } from "@senseii/types";
-import { toast } from "sonner";
 
 // In shared types package
 import { z } from 'zod';
@@ -81,18 +79,6 @@ axiosInstance.interceptors.response.use((response) => {
   if (error.response) {
     try {
       const { success, error: { code, message, details } } = ErrorResponseSchema.parse(error.response.data)
-      // NOTE: maybe switch case is not needed here.
-      switch (code) {
-        case HTTP.STATUS.BAD_REQUEST.toString():
-          toast.error(message)
-          break
-        case HTTP.STATUS.NOT_FOUND.toString():
-          toast.error(message)
-          break
-        default:
-          toast.error("Unknown error occured")
-          break
-      }
       return Promise.reject({
         code: code,
         message: message,
@@ -106,7 +92,6 @@ axiosInstance.interceptors.response.use((response) => {
     }
   } else if (error.request) {
     // Some error while forming the request
-    toast.error('No response from server. Check your internet connection.');
     return Promise.reject({
       code: 'NETWORK_ERROR',
       message: 'Unable to connect to the server',
@@ -114,7 +99,6 @@ axiosInstance.interceptors.response.use((response) => {
     });
   } else {
     // Something happened in setting up the request that triggered an Error
-    toast.error('Error setting up the request');
     return Promise.reject({
       code: 'REQUEST_SETUP_ERROR',
       message: 'Error preparing the API request',

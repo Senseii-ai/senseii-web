@@ -1,4 +1,4 @@
-import { type Session } from '@/lib/types'
+import { Session } from 'next-auth'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -26,7 +26,7 @@ export function UserMenu({ user }: UserMenuProps) {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="pl-0">
             <div className="flex size-7 shrink-0 select-none items-center justify-center rounded-full bg-muted/50 text-xs font-medium uppercase text-muted-foreground">
-              {getUserInitials(user.email)}
+              {getUserInitials(user.email as string)}
             </div>
             <span className="ml-2 hidden md:block">{user.email}</span>
           </Button>

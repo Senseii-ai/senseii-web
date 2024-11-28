@@ -2,10 +2,10 @@
 
 import { signIn } from '@/auth'
 import { User } from '@/lib/types'
-import { AuthError } from 'next-auth'
+import { AuthError, CredentialsSignin } from 'next-auth'
 import { z } from 'zod'
 import { ResultCode } from '@/lib/utils'
-import { userLoginDTO, UserLoginDTO } from '@senseii/types'
+import { HTTP, userLoginDTO, UserLoginDTO } from '@senseii/types'
 
 export async function getUser(email: string): Promise<User | undefined> {
   const response = await fetch('http://localhost:9090/api/', {
@@ -32,84 +32,63 @@ export async function getUser(email: string): Promise<User | undefined> {
   return user
 }
 
-interface Result {
-  type: "success" | "failed"
-  resultCode: ResultCode
+
+export interface AuthResponse {
+  code: string
+  message: string
+  details: string
+  status: 'success' | 'failed'
 }
 
-export async function login(data: UserLoginDTO): Promise<Result> {
+export async function login(data: UserLoginDTO): Promise<AuthResponse> {
   try {
     const validatedData = userLoginDTO.safeParse(data)
     if (!validatedData.success) {
       return {
-        type: "failed",
-        resultCode: ResultCode.InvalidCredentials
+        code: HTTP.STATUS.BAD_REQUEST.toString(),
+        message: HTTP.STATUS_MESSAGE[HTTP.STATUS.BAD_REQUEST],
+        details: '',
+        status: 'failed'
       }
     }
     const { email, password } = validatedData.data
-    console.log("LOGIN DATA VALIDATION WORKED")
-    return await signIn("credentials", {
+    await signIn('credentials', {
       email,
       password,
       redirect: false
     })
+    return {
+      code: HTTP.STATUS.OK.toString(),
+      message: 'login successful',
+      details: '',
+      status: 'success'
+    }
   } catch (error) {
-    console.log("SOMETHING FUCKUP HAPPENED", error)
-    throw error
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return {
+            code: HTTP.STATUS.BAD_REQUEST.toString(),
+            message: "invalid credentials",
+            details: "",
+            status: "failed"
+          }
+        default: {
+          return {
+            code: "FUck this error",
+            message: "invalid credentials",
+            details: "",
+            status: "failed"
+          }
+        }
+      }
+    }
+    console.log("ERROR", error)
+    return {
+      code: "Unknown Error",
+      message: "I don't know man",
+      details: "",
+      status: "failed"
+    }
   }
 }
-
-// export async function authenticate(
-//   _prevState: Result | undefined,
-//   formData: FormData
-// ): Promise<Result | undefined> {
-//   try {
-//     // destructure the form data
-//     const email = formData.get('email')
-//     const password = formData.get('password')
-//
-//     // validate the credentials
-//     const parsedCredentials = z
-//       .object({
-//         email: z.string().email(),
-//         password: z.string().min(6)
-//       })
-//       .safeParse({
-//         email,
-//         password
-//       })
-//
-//     if (parsedCredentials.success) {
-//       const serverResponse = await signIn('credentials', {
-//         email,
-//         password,
-//         redirect: false
-//       })
-//
-//       return {
-//         type: 'success',
-//         resultCode: ResultCode.UserLoggedIn
-//       }
-//     } else {
-//       return {
-//         type: 'error',
-//         resultCode: ResultCode.InvalidCredentials
-//       }
-//     }
-//   } catch (error) {
-//     if (error instanceof AuthError) {
-//       switch (error.type) {
-//         case 'CredentialsSignin':
-//           return {
-//             type: 'error',
-//             resultCode: ResultCode.InvalidCredentials
-//           }
-//         default:
-//           return {
-//             type: 'error',
-//             resultCode: ResultCode.UnknownError
-//           }
-//       }
-//     }
-//   }
-// }
