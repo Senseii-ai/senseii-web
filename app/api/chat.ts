@@ -1,24 +1,17 @@
-import { BaseUrl } from '@/lib/types'
+import { chatApi } from '@/lib/api/chat/chat'
 
 export const sendUserMessage = async (
-  userId: string,
   chatId: string,
   content: string
 ) => {
   try {
-    const response = await fetch(`${BaseUrl}/chat`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ userId, chatId, content })
-    })
-
+    const response = await chatApi.chat({ chatId: chatId, content: content })
+    // TODO: handle errors here.
     if (!response.ok) throw new Error('Network response was not ok')
 
     const textStream = response.body?.pipeThrough(
       new TransformStream({
-        start() {},
+        start() { },
         transform(chunk, controller) {
           const decodedText = new TextDecoder().decode(chunk)
           const lines = decodedText.split('\n').filter(line => line.trim())

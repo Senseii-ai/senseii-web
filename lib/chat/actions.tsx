@@ -23,14 +23,14 @@ import { SpinnerMessage, UserMessage } from '@/components/stocks/message'
 import { Chat, Message } from '@/lib/types'
 import { auth } from '@/auth'
 import { sendUserMessage } from '@/app/api/chat'
-import { Session } from 'next-auth'
 import React from 'react'
+import { Session } from 'next-auth'
 
 async function submitUserMessage(content: string) {
   'use server'
 
   const aiState = getMutableAIState<typeof AI>()
-  const { user } = (await auth()) as Session
+  const session = (await auth()) as Session
   aiState.update({
     ...aiState.get(),
     messages: [
@@ -44,7 +44,6 @@ async function submitUserMessage(content: string) {
   })
 
   const stream = await sendUserMessage(
-    user?.id as string,
     aiState.get().chatId,
     content
   )

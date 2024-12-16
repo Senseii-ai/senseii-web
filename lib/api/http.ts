@@ -41,6 +41,8 @@ const AuthResponseSchema = ApiResponseSchema(
   })
 );
 
+export const BaseURL = process.env.NEXT_BACKEND_API_URL
+
 export const axiosInstance = axios.create({
   baseURL: process.env.NEXT_BACKEND_API_URL,
   headers: {

@@ -3,8 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
-import { BaseUrl, Chat } from '@/lib/types'
-import { httpGet } from '@/lib/api/http'
+import { Chat } from '@/lib/types'
+import { BaseURL } from '@/lib/api/http'
 
 export async function getChats(userId?: string | null) {
   const session = await auth()
@@ -20,14 +20,18 @@ export async function getChats(userId?: string | null) {
   }
 
   try {
-    const url = `${BaseUrl}/chat/user/${userId}/chats`
-    const { data } = await httpGet(url)
+    const url = `${BaseURL}/chat/user/${userId}/chats`
+    const response = await fetch(url)
+    const { data } = await response.json()
     return data as Chat[]
   } catch (error) {
     return []
   }
 }
 
+/**
+ * getChat returns the messages for a chat Id.
+*/
 export async function getChat(id: string, userId: string) {
   const session = await auth()
 
@@ -37,8 +41,10 @@ export async function getChat(id: string, userId: string) {
     }
   }
 
-  const url = `${BaseUrl}/chat/user/${userId}/chat/${id}`
-  const { data } = await httpGet(url)
+  const url = `${BaseURL}/chat/user/${userId}/chat/${id}`
+  // TODO: replace fetch with axios.
+  const response = await fetch(url)
+  const { data } = await response.json()
 
   if (!data || (userId && data.userId !== userId)) {
     return null
@@ -46,6 +52,7 @@ export async function getChat(id: string, userId: string) {
   return data
 }
 
+// TODO: Implement remove a single chat functionality.
 export async function removeChat({ id, path }: { id: string; path: string }) {
   const session = await auth()
 
@@ -71,6 +78,7 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
   return revalidatePath(path)
 }
 
+// TODO: Implement clear chat functionality
 export async function clearChats() {
   // const session = await auth()
   //
@@ -107,6 +115,7 @@ export async function clearChats() {
 //   return chat
 // }
 
+// TODO: Implement the share chat functionality.
 export async function shareChat(id: string) {
   const session = await auth()
 
@@ -138,6 +147,7 @@ export async function refreshHistory(path: string) {
   redirect(path)
 }
 
+// TODO: use this function in right places.
 export async function getMissingKeys() {
   const keysRequired = ['OPENAI_API_KEY']
   return keysRequired
