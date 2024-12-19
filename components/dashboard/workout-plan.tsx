@@ -1,15 +1,20 @@
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import TableWrapper from "./table-wrapper";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import PlanNotAvailable from "./plan-not-available";
 
-export default function WorkOutPlan() {
+interface WorkoutPlanProps {
+  isAvailable: boolean
+}
+
+export default function WorkOutPlan({ isAvailable }: WorkoutPlanProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Workout Plan for Today</CardTitle>
       </CardHeader>
       <CardContent>
-        <TableWrapper>
+        {isAvailable ? <TableWrapper>
           <Table>
             <TableCaption>Workouts to do today</TableCaption>
             <TableHeader>
@@ -66,7 +71,8 @@ export default function WorkOutPlan() {
 
             </TableBody>
           </Table>
-        </TableWrapper>
+        </TableWrapper> : <PlanNotAvailable />}
+
       </CardContent>
 
     </Card>

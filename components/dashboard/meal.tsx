@@ -4,16 +4,27 @@ import DashboardCardWrapper from "./card-wrapper";
 import Macros from "./macros";
 import { Card, CardContent } from "../ui/card";
 
-export default function Meals() {
+interface MealsProps {
+  available: boolean
+}
+
+function MealsNotAvailable() {
+  return (
+    <div className="flex justify-center">press + to enter manually or install our App</div>
+  )
+}
+
+export default function Meals({ available }: MealsProps) {
   return (
     <>
       <DashboardCardWrapper showFooter={true} showAddButton={true} icon={<GoPlusCircle />} headerTitle={"Nutrition"} footerText={"movement so far"}>
-        <div className="md:flex hidden gap-x-2">
+        {available ? <div className="md:flex hidden gap-x-2">
           <Macros />
           <Macros />
           {/* TODO: Add section for Micros */}
         </div>
 
+          : <MealsNotAvailable />}
         <Carousel
           opts={{
             align: "start",
