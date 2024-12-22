@@ -5,32 +5,26 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 interface WorkoutPlanProps {
   isAvailable: boolean
-  title: string
 }
 
-export default function WorkoutPlan({ title, isAvailable }: WorkoutPlanProps) {
+export default function DailyWorkoutPlan({ isAvailable }: WorkoutPlanProps) {
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle>Workout Plan for today</CardTitle>
       </CardHeader>
       <CardContent>
         {isAvailable ? <ScrollArea>
           <Table>
-
             <TableCaption>Workouts to do today</TableCaption>
-
             <TableHeader>
-
               <TableRow>
                 <TableHead className="w-[100px]">Invoice</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Method</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
               </TableRow>
-
             </TableHeader>
-
             <TableBody>
               <TableRow>
                 <TableCell className="font-medium">INV001</TableCell>
@@ -80,6 +74,8 @@ export default function WorkoutPlan({ title, isAvailable }: WorkoutPlanProps) {
         </ScrollArea> : <PlanNotAvailable />}
 
       </CardContent>
+
     </Card>
+
   )
 }
