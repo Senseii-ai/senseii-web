@@ -4,7 +4,7 @@ interface TableWrapperProps {
 
 export default function TableWrapper({ children }: TableWrapperProps) {
   return (
-    <div className="max-h-96 overflow-y-auto">
+    <div className="overflow-y-auto">
       {children}
     </div>
   )
