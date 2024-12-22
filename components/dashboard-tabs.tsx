@@ -1,8 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import Movement from "./dashboard/movement";
 import Meals from "./dashboard/meal";
-import MealPlan from "./dashboard/meal-plan";
-import WorkOutPlan from "./dashboard/workout-plan";
+import Overview from "./dashboard/overview";
+import DailyWorkoutPlan from "./dashboard/daily-workout-plan";
+import DailyMealPlan from "./dashboard/daily-meal-plan";
 
 export default function TabComponent() {
   return (
@@ -21,12 +22,12 @@ export default function TabComponent() {
           </div>
         </div>
         <div className="col-span-4 space-y-2">
-          <WorkOutPlan isAvailable={false} />
-          <MealPlan isAvailable={false} />
+          <DailyWorkoutPlan isAvailable={true} />
+          <DailyMealPlan isAvailable={true} />
         </div>
       </TabsContent>
       <TabsContent value="overview" className="">
-        Overall progress of the goal
+        <Overview />
       </TabsContent>
     </Tabs>
   )

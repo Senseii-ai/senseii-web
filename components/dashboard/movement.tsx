@@ -36,16 +36,17 @@ interface ProgressItemsProps {
 
 export function ProgressItem({ title, icon, value, goal }: ProgressItemsProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-full">
       <CardTitle>{title}</CardTitle>
       <div className="flex justify-between">
         <div className="flex gap-x-2">
-          <div className="text-2xl">
+          {icon ? <div className="text-2xl">
             {icon}
-          </div>
-          <h3 className="font-semibold text-lg">{value}</h3>
+          </div> : ""}
+
+          <h3 className="font-semibold text-base">{value}</h3>
         </div>
-        <p>Goal {goal}</p>
+        <p className="text-xs">Goal {goal}</p>
       </div>
       <Progress className="" value={value} />
     </div>

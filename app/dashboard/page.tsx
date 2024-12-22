@@ -19,9 +19,9 @@ const goals: ComboboxItem[] = [
 
 export default function GoalDashboard() {
   return (
-    <div className="p-5 space-y-5">
-      <DashboardNav goalSelectorProps={{ comboboxItems: goals }} />
+    <div className="container my-5 space-y-5">
       <h1 className="text-4xl font-bold">Dashboard</h1>
+      <DashboardNav goalSelectorProps={{ comboboxItems: goals }} />
       <TabComponent />
     </div>
   )

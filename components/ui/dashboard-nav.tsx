@@ -34,11 +34,11 @@ export default function DashboardNav({ goalSelectorProps: { user, comboboxItems 
         </Link>
 
         <Link
-          href={"dashboard"}
+          href={"profile"}
           className={`${selected === 1 ? "text-primary" : "text-muted-foreground"} text-base font-medium transition-colors hover:text-primary`}
           onClick={() => handleClick(1)}
         >
-          Plans
+          Profile
         </Link>
       </nav>
     </div>
