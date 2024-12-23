@@ -1,22 +1,20 @@
 'use client'
 
+import UserPreference from "@/components/profile/user-preference";
 import { Avatar } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { AvatarImage } from "@radix-ui/react-avatar";
-import { Separator } from "@radix-ui/react-dropdown-menu";
-import { ArrowLeftIcon, Pencil1Icon } from "@radix-ui/react-icons";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { toast } from "sonner";
 
 export default function Profile() {
   return (
-    <div className="container flex flex-col gap-y-2 h-screen">
+    <div className="container flex flex-col gap-y-2">
       <Link href={"dashboard"} className="flex items-center gap-x-2">
         <ArrowLeftIcon />
         Back
       </Link>
-      <Card className="h-full max-h-72 flex flex-col space-y-10">
+      <Card className="min-h-42 h-[300px] max-h-72 flex flex-col space-y-10">
         <div className="relative w-full h-full rounded-lg overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-tl from-[#FEAC5E] via-[#C779D0]">
           </div>
@@ -58,67 +56,7 @@ export default function Profile() {
         </Card>
       </div>
 
-      <Card className="h-full">
-        <CardHeader>
-          <div className="flex justify-between">
-            <h1 className="font-semibold text-lg">
-              Basic Information
-            </h1>
-            <Pencil1Icon onClick={() => toast.info("not supported yet")} width={20} height={20} />
-          </div>
-
-        </CardHeader>
-        <CardContent className="h-full">
-          <ScrollArea className="h-full overflow-auto w-full rounded-md border">
-            <div className="p-4">
-              <div className="text-sm">
-                Hello
-              </div>
-              <Separator className="my-2" />
-
-              <div className="text-sm">
-                Hello
-              </div>
-              <Separator className="my-2" />
-
-              <div className="text-sm">
-                Hello
-              </div>
-              <Separator className="my-2" />
-
-              <div className="text-sm">
-                Hello
-              </div>
-              <Separator className="my-2" />
-
-              <div className="text-sm">
-                Hello
-              </div>
-              <Separator className="my-2" />
-
-              <div className="text-sm">
-                Hello
-              </div>
-              <Separator className="my-2" />
-
-              <div className="text-sm">
-                Hello
-              </div>
-              <Separator className="my-2" />
-
-              <div className="text-sm">
-                Hello
-              </div>
-              <Separator className="my-2" />
-
-              <div className="text-sm">
-                Hello
-              </div>
-              <Separator className="my-2" />
-            </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+      <UserPreference />
     </div>
   )
 }
