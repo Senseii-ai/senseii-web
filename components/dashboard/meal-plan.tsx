@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import PlanNotAvailable from "./plan-not-available";
-import { IDailyNutritionPlan, IMacroNutrients, IMeals, IMicroNutrients, INutritionPlan } from "@senseii/types";
+import { IDailyNutritionPlan, IMacroNutrients, IMeals, IMicroNutrients, INutritionPlan, Weekday } from "@senseii/types";
 
 import {
   Table,
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table"
 
 
-const dailyMealPlan: IDailyNutritionPlan = {
+export const dailyMealPlan: IDailyNutritionPlan = {
   day: "Monday",
   meals: [
     {
@@ -96,6 +96,13 @@ const dailyMealPlan: IDailyNutritionPlan = {
     },
   ]
 }
+
+const days: Weekday[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+const weeklyMealPlan = days.map((day) => ({
+  ...dailyMealPlan,
+  day,
+}));
 
 const mealPlan: INutritionPlan = {
   plan: [dailyMealPlan, dailyMealPlan, dailyMealPlan]
@@ -196,7 +203,7 @@ export default function MealPlan({ isAvailable }: MealPlanProps) {
       <CardContent className="space-y-2">
         {isAvailable ?
           <Accordion type="single" collapsible className="w-full">
-            {mealPlan.plan.map((item, index) => (
+            {weeklyMealPlan.map((item, index) => (
               <MealDropdown meal={item} key={index} item={index} />
             ))}
           </Accordion>

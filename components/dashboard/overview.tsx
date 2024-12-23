@@ -38,7 +38,8 @@ export default function Overview() {
       </div>
 
       <MealPlan isAvailable={true} />
-      <WorkoutPlan title="Workout Plan" isAvailable={true} />
+      {/* TODO: Add workout plans here */}
+      {/* <WorkoutPlan title="Workout Plan" isAvailable={true} /> */}
     </div >
   )
 }

@@ -8,7 +8,6 @@ import {
   IEatingHabits,
   IHealthGoals,
   ILifeStyle,
-  IUserPreferences
 } from '@senseii/types'
 import { toast } from 'sonner'
 

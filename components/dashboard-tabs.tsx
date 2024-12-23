@@ -2,7 +2,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import Movement from "./dashboard/movement";
 import Meals from "./dashboard/meal";
 import Overview from "./dashboard/overview";
-import DailyWorkoutPlan from "./dashboard/daily-workout-plan";
 import DailyMealPlan from "./dashboard/daily-meal-plan";
 
 export default function TabComponent() {
@@ -22,7 +21,6 @@ export default function TabComponent() {
           </div>
         </div>
         <div className="col-span-4 space-y-2">
-          <DailyWorkoutPlan isAvailable={true} />
           <DailyMealPlan isAvailable={true} />
         </div>
       </TabsContent>
