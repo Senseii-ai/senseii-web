@@ -1,6 +1,8 @@
+import { auth } from "@/auth";
 import { ComboboxItem } from "@/components/combobox";
 import TabComponent from "@/components/dashboard-tabs";
 import DashboardNav from "@/components/ui/dashboard-nav";
+import { redirect } from "next/navigation";
 
 const goals: ComboboxItem[] = [
   {
@@ -17,7 +19,12 @@ const goals: ComboboxItem[] = [
   },
 ]
 
-export default function GoalDashboard() {
+export default async function GoalDashboard() {
+
+  const user = (await auth())
+  if (!user) {
+    redirect('/login')
+  }
   return (
     <div className="container my-5 space-y-5">
       <h1 className="text-4xl font-bold">Dashboard</h1>
