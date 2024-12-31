@@ -3,7 +3,7 @@ import chalk from "chalk";
 interface InfoParams {
   message: string;
   status?: "success" | "failed" | "INFO" | "alert";
-  layer?: "DB" | "SERVICE" | "CONTROLLER" | "SERVER" | "AXIOS"
+  layer?: "DB" | "SERVICE" | "CONTROLLER" | "SERVER" | "AXIOS" | "ACTION"
   name?: string
 }
 
