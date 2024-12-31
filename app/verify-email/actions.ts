@@ -2,12 +2,12 @@
 
 import { authAPI } from '@/lib/api/auth'
 import { signupFormSchema, AuthResponse, HTTP, SignUpFormSchema } from '@senseii/types'
-import { ZodError } from 'zod'
+import { z, ZodError } from 'zod'
 
-export async function signup(data: SignUpFormSchema): Promise<AuthResponse | undefined> {
+export async function verifyEmail(token: string): Promise<AuthResponse | undefined> {
   try {
-    const validatedUser = signupFormSchema.safeParse(data)
-    if (!validatedUser.success) {
+    const validatedToken = z.string().min(128).safeParse(token)
+    if (!validatedToken.success) {
       return {
         code: HTTP.STATUS.BAD_REQUEST.toString(),
         message: HTTP.STATUS_MESSAGE[HTTP.STATUS.BAD_REQUEST],
@@ -15,18 +15,11 @@ export async function signup(data: SignUpFormSchema): Promise<AuthResponse | und
         status: 'failed'
       }
     } else {
-      const { firstName, lastName, email, password } = validatedUser.data
-      const userDTO: SignUpFormSchema = {
-        email: email,
-        password: password,
-        firstName: firstName,
-        lastName: lastName,
-      }
-      const response = await authAPI.signUp(userDTO)
+      const response = await authAPI.verifyEmail(validatedToken.data)
       if (response && response.success === true) {
         return {
           code: HTTP.STATUS.OK.toString(),
-          message: `verification email has been sent to ${response.data.email} `,
+          message: `email verified, please login `,
           details: "",
           status: "success"
         }

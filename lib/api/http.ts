@@ -2,6 +2,30 @@ import axios from "axios";
 
 // In shared types package
 import { z } from 'zod';
+import { infoLogger } from "../logger/logger";
+
+// TODO: Make this a shared interface.
+const ZErrorCode = z.enum([
+  'VALIDATION_ERROR',
+  'CONFLICT_ERROR',
+  'NOT_FOUND_ERROR',
+  'INTERNAL_SERVER_ERROR'
+])
+const ZAppError = z.object({
+  code: z.number(),
+  message: z.string(),
+  details: z.record(z.unknown()).optional(),
+  timestamp: z.date()
+})
+
+export type AppError = z.infer<typeof ZAppError>
+type ErrorCode = z.infer<typeof ZErrorCode>
+
+export type Result<T> =
+  | { success: true; data: T }
+  | { success: false; error: AppError }
+
+
 
 // Generic Success Response Schema
 export const SuccessResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) => z.object({
@@ -53,7 +77,7 @@ export const axiosInstance = axios.create({
 
 const isAuthRoute = (route: string) => {
   const routeArray = route.split("/")
-  if (routeArray.includes("login") || routeArray.includes("signup")) {
+  if (routeArray.includes("login") || routeArray.includes("signup") || routeArray.includes("verify-email")) {
     return true
   }
 }
@@ -80,6 +104,7 @@ axiosInstance.interceptors.response.use((response) => {
   // error in response from the call
   if (error.response) {
     try {
+      infoLogger({ message: "response was wrong", status: "failed", layer: "AXIOS" })
       const { success, error: { code, message, details } } = ErrorResponseSchema.parse(error.response.data)
       return Promise.reject({
         code: code,
@@ -94,12 +119,15 @@ axiosInstance.interceptors.response.use((response) => {
     }
   } else if (error.request) {
     // Some error while forming the request
+    infoLogger({ message: "network error", status: "failed", layer: "AXIOS" })
     return Promise.reject({
       code: 'NETWORK_ERROR',
       message: 'Unable to connect to the server',
       details: null
     });
   } else {
+    infoLogger({ message: "other error", status: "failed", layer: "AXIOS" })
+    console.error(error)
     // Something happened in setting up the request that triggered an Error
     return Promise.reject({
       code: 'REQUEST_SETUP_ERROR',

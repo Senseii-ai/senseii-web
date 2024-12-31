@@ -15,9 +15,12 @@ export interface UserMenuProps {
   user: Session['user']
 }
 
-function getUserInitials(name: string) {
-  const [firstName, lastName] = name.split(' ')
-  return lastName ? `${firstName[0]}${lastName[0]}` : firstName.slice(0, 2)
+// TODO: Currently user name is displayed using email. make it more modular
+function getUserInitials(email: string) {
+  // const [firstName, lastName] = name.split(' ')
+  // return lastName ? `${firstName[0]}${lastName[0]}` : firstName.slice(0, 2)
+  const nameArr = email.split("")
+  return nameArr.slice(0, 2).join("")
 }
 
 export function UserMenu({ user }: UserMenuProps) {
