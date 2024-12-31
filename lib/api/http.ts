@@ -4,6 +4,29 @@ import axios from "axios";
 import { z } from 'zod';
 import { infoLogger } from "../logger/logger";
 
+// TODO: Make this a shared interface.
+const ZErrorCode = z.enum([
+  'VALIDATION_ERROR',
+  'CONFLICT_ERROR',
+  'NOT_FOUND_ERROR',
+  'INTERNAL_SERVER_ERROR'
+])
+const ZAppError = z.object({
+  code: z.number(),
+  message: z.string(),
+  details: z.record(z.unknown()).optional(),
+  timestamp: z.date()
+})
+
+export type AppError = z.infer<typeof ZAppError>
+type ErrorCode = z.infer<typeof ZErrorCode>
+
+export type Result<T> =
+  | { success: true; data: T }
+  | { success: false; error: AppError }
+
+
+
 // Generic Success Response Schema
 export const SuccessResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) => z.object({
   success: z.literal(true),
@@ -54,7 +77,7 @@ export const axiosInstance = axios.create({
 
 const isAuthRoute = (route: string) => {
   const routeArray = route.split("/")
-  if (routeArray.includes("login") || routeArray.includes("signup")) {
+  if (routeArray.includes("login") || routeArray.includes("signup") || routeArray.includes("verify-email")) {
     return true
   }
 }
@@ -103,8 +126,8 @@ axiosInstance.interceptors.response.use((response) => {
       details: null
     });
   } else {
-
     infoLogger({ message: "other error", status: "failed", layer: "AXIOS" })
+    console.error(error)
     // Something happened in setting up the request that triggered an Error
     return Promise.reject({
       code: 'REQUEST_SETUP_ERROR',
