@@ -6,6 +6,7 @@ import { AuthError, CredentialsSignin } from 'next-auth'
 import { z } from 'zod'
 import { ResultCode } from '@/lib/utils'
 import { HTTP, userLoginDTO, UserLoginDTO } from '@senseii/types'
+import { infoLogger } from '@/lib/logger/logger'
 
 export async function getUser(email: string): Promise<User | undefined> {
   const response = await fetch('http://localhost:9090/api/', {
@@ -44,6 +45,7 @@ export async function login(data: UserLoginDTO): Promise<AuthResponse> {
   try {
     const validatedData = userLoginDTO.safeParse(data)
     if (!validatedData.success) {
+      infoLogger({ message: "invalid creds", status: "failed" })
       return {
         code: HTTP.STATUS.BAD_REQUEST.toString(),
         message: HTTP.STATUS_MESSAGE[HTTP.STATUS.BAD_REQUEST],

@@ -2,6 +2,7 @@ import axios from "axios";
 
 // In shared types package
 import { z } from 'zod';
+import { infoLogger } from "../logger/logger";
 
 // Generic Success Response Schema
 export const SuccessResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) => z.object({
@@ -80,6 +81,7 @@ axiosInstance.interceptors.response.use((response) => {
   // error in response from the call
   if (error.response) {
     try {
+      infoLogger({ message: "response was wrong", status: "failed", layer: "AXIOS" })
       const { success, error: { code, message, details } } = ErrorResponseSchema.parse(error.response.data)
       return Promise.reject({
         code: code,
@@ -94,12 +96,15 @@ axiosInstance.interceptors.response.use((response) => {
     }
   } else if (error.request) {
     // Some error while forming the request
+    infoLogger({ message: "network error", status: "failed", layer: "AXIOS" })
     return Promise.reject({
       code: 'NETWORK_ERROR',
       message: 'Unable to connect to the server',
       details: null
     });
   } else {
+
+    infoLogger({ message: "other error", status: "failed", layer: "AXIOS" })
     // Something happened in setting up the request that triggered an Error
     return Promise.reject({
       code: 'REQUEST_SETUP_ERROR',
