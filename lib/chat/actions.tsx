@@ -51,9 +51,9 @@ async function submitUserMessage(content: string) {
   const readableStream = createStreamableValue(stream)
   const result = {
     value: (
-      <BotCard>
+      <>
         <BotMessage content={readableStream.value} />
-      </BotCard>
+      </>
     )
   }
   return {
@@ -117,7 +117,7 @@ export const AI = createAI<AIState, UIState>({
         messages,
         path
       }
-      // INFO: usually we save conversation state here, but we are depending OpenAI threads to hold the state of Converstaions. This implementation might change in the future.
+      // FIX: usually we save conversation state here, but we are depending OpenAI threads to hold the state of Converstaions. This implementation might change in the future.
       // await saveChat(chat)
     } else {
       return
