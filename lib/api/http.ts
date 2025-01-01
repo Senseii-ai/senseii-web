@@ -87,6 +87,7 @@ const isAuthRoute = (route: string) => {
 */
 
 axiosInstance.interceptors.request.use(async (config) => {
+  // attach Bearer token if the api route is non-auth.
   if (!isAuthRoute(config.url as string)) {
     config.headers["Authorization"] = `Bearer ${config.data.accessToken}`
     config.data.accessToken = ""
@@ -98,11 +99,13 @@ axiosInstance.interceptors.request.use(async (config) => {
 })
 
 axiosInstance.interceptors.response.use((response) => {
+  // 2xx response from the server.
   const data = response.data
   return data
 }, (error) => {
-  // error in response from the call
+  // error response from the server.
   if (error.response) {
+    // error in response
     try {
       infoLogger({ message: "response was wrong", status: "failed", layer: "AXIOS" })
       const { success, error: { code, message, details } } = ErrorResponseSchema.parse(error.response.data)
