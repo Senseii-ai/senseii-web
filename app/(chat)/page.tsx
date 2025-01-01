@@ -12,6 +12,7 @@ export const metadata = {
 export default async function IndexPage() {
   const id = nanoid()
   const session = (await auth()) as Session
+  console.log("session", session)
   if (!session) {
     redirect('/login')
   }

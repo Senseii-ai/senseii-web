@@ -1,6 +1,6 @@
 'use server'
 
-import { signIn } from '@/auth'
+import { auth, signIn } from '@/auth'
 import { User } from '@/lib/types'
 import { AuthError, CredentialsSignin } from 'next-auth'
 import { z } from 'zod'
@@ -39,6 +39,14 @@ export interface AuthResponse {
   message: string
   details: string
   status: 'success' | 'failed'
+}
+
+export const loginGithub = async () => {
+  return await signIn("github")
+}
+
+export const loginGoogle = async () => {
+  return await signIn("google")
 }
 
 export async function login(data: UserLoginDTO): Promise<AuthResponse> {
@@ -85,7 +93,6 @@ export async function login(data: UserLoginDTO): Promise<AuthResponse> {
         }
       }
     }
-    console.log("ERROR", error)
     return {
       code: "Unknown Error",
       message: "I don't know man",

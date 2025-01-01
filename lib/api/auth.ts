@@ -1,9 +1,11 @@
 import {
   ResultCode,
   SignUpFormSchema,
+  User,
   UserDTO,
   userDTOSchema,
   UserLoginDTO,
+  UserLoginReponseDTO,
   userLoginResponseDTO
 } from '@senseii/types'
 import { axiosInstance, Result, SuccessResponseSchema } from './http'
@@ -19,7 +21,45 @@ export const apiEndpoints = {
   }
 }
 
+const OAuthLoginDTO = z.object({
+  email: z.string().email(),
+  name: z.string().optional()
+})
+
+type OAuthLogin = z.infer<typeof OAuthLoginDTO>
+
 export const authAPI = {
+  OAuthLogin: async (data: OAuthLogin) => {
+    // return savedUser
+    try {
+      const savedUser: Result<UserLoginReponseDTO> = await axiosInstance.post('/auth/non-credentials', data)
+      infoLogger({
+        message: 'signin worked',
+        status: 'success',
+        layer: 'CONTROLLER',
+        name: 'signin'
+      })
+
+      const successResponse =
+        SuccessResponseSchema(userLoginResponseDTO).safeParse(savedUser)
+      if (!successResponse.success) {
+        infoLogger({
+          message: successResponse.error.message,
+          status: 'failed',
+          layer: 'CONTROLLER',
+          name: 'signin'
+        })
+      }
+      return successResponse.data
+    } catch (error) {
+      if (error instanceof ZodError) {
+        console.error('validation error', error.message)
+        return null
+      }
+      // error occured on the API layer.
+      throw error
+    }
+  },
   signUp: async (data: SignUpFormSchema) => {
     try {
       infoLogger({
@@ -66,7 +106,7 @@ export const authAPI = {
       return successResponse.data
     } catch (error) {
       if (error instanceof ZodError) {
-        console.error('validation error', error.name)
+        console.error('validation error', error.message)
         return null
       }
       // error occured on the API layer.
