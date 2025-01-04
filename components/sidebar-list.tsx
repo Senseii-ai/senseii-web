@@ -2,6 +2,7 @@ import { getChats } from '@/app/actions'
 import { ClearHistory } from '@/components/clear-history'
 import { SidebarItems } from '@/components/sidebar-items'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { infoLogger } from '@/lib/logger/logger'
 import { redirect } from 'next/navigation'
 import { cache } from 'react'
 
@@ -11,6 +12,8 @@ interface SidebarListProps {
 }
 
 const loadChats = cache(async (userId?: string) => {
+  infoLogger({ message: "loading user chats", status: "INFO", name: "SideBarList" })
+  console.log(userId)
   return await getChats(userId)
 })
 

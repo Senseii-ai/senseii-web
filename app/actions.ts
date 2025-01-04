@@ -5,9 +5,10 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { Chat } from '@/lib/types'
 import { BaseURL } from '@/lib/api/http'
+import { Session } from 'next-auth'
 
 export async function getChats(userId?: string | null) {
-  const session = await auth()
+  const session = await auth() as Session
 
   if (!userId) {
     return []
@@ -21,8 +22,11 @@ export async function getChats(userId?: string | null) {
 
   try {
     const url = `${BaseURL}/chat/user/${userId}/chats`
+    console.log("trying to get the chats")
     const response = await fetch(url)
     const { data } = await response.json()
+    console.log("DATA", data)
+    //FIX: maybe path is going to cause problems.
     return data as Chat[]
   } catch (error) {
     return []
