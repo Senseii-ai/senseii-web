@@ -54,6 +54,7 @@ export function ChatPanel({
         scrollToBottom={scrollToBottom}
       />
 
+      {/* Example chats */}
       <div className="mx-auto sm:max-w-2xl sm:px-4">
         <div className="mb-4 grid grid-cols-2 gap-2 px-4 sm:px-0">
           {messages.length === 0 &&
@@ -89,6 +90,7 @@ export function ChatPanel({
             ))}
         </div>
 
+        {/* Loaded Chats */}
         {messages?.length >= 2 ? (
           <div className="flex h-12 items-center justify-center">
             <div className="flex space-x-2">

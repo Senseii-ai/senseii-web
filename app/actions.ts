@@ -9,10 +9,11 @@ import { Session } from 'next-auth'
 import { infoLogger } from '@/lib/logger/logger'
 import { IChat } from '@senseii/types'
 import { userAPI } from '@/lib/api/user/users'
+import { AppMessageFromOAIMesssage } from '@/lib/chat/actions'
 
 export async function getChats(sess?: Session | null) {
   infoLogger({ message: `getting chats for ${sess}` })
-  const session = await auth() as Session
+  const session = (await auth()) as Session
 
   if (!sess) {
     return []
@@ -30,25 +31,29 @@ export async function getChats(sess?: Session | null) {
 
 /**
  * getChat returns the messages for a chat Id.
-*/
-export async function getChat(id: string, userId: string) {
+ */
+export async function getChat(id: string, email: string) {
   const session = await auth()
 
-  if (userId !== session?.user?.id) {
+  if (email !== session?.user?.id) {
     return {
       error: 'Unauthorized'
     }
   }
 
-  const url = `${BaseURL}/chat/user/${userId}/chat/${id}`
   // TODO: replace fetch with axios.
-  const response = await fetch(url)
-  const { data } = await response.json()
-
-  if (!data || (userId && data.userId !== userId)) {
+  const response = await userAPI.getChatMessages(session, id)
+  if (!response) {
     return null
   }
-  return data
+
+  const serverMessages = response.messages.map(AppMessageFromOAIMesssage)
+  const finalResponse = {
+    ...response,
+    messages: serverMessages
+  }
+
+  return finalResponse
 }
 
 // TODO: Implement remove a single chat functionality.
