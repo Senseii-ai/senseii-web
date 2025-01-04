@@ -15,12 +15,13 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
-import { type Chat } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { IChat } from '@senseii/types'
+import { infoLogger } from '@/lib/logger/logger'
 
 interface SidebarItemProps {
   index: number
-  chat: Chat
+  chat: IChat
   children?: React.ReactNode
 }
 
@@ -31,7 +32,10 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
   const [newChatId, setNewChatId] = useLocalStorage('newChatId', null)
   const shouldAnimate = index === 0 && isActive && newChatId
 
-  if (!chat?.id) return null
+
+  if (!chat?.id) {
+    null
+  }
 
   return (
     <motion.div
@@ -69,7 +73,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
         )}
       </div>
       <Link
-        href={chat.path}
+        href={`/chat/${chat.id}`}
         className={cn(
           buttonVariants({ variant: 'ghost' }),
           'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
@@ -118,7 +122,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
           </span>
         </div>
       </Link>
-      {/* {isActive && <div className="absolute right-2 top-1">{children}</div>} */}
+      {isActive && <div className="absolute right-2 top-1">{children}</div>}
     </motion.div>
   )
 }

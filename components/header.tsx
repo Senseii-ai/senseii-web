@@ -22,7 +22,7 @@ async function UserOrLogin() {
       {session?.user ? (
         <>
           <SidebarMobile>
-            <ChatHistory userId={session.user.email as string} />
+            <ChatHistory sess={session} />
           </SidebarMobile>
           <SidebarToggle />
         </>

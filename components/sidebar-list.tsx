@@ -3,22 +3,24 @@ import { ClearHistory } from '@/components/clear-history'
 import { SidebarItems } from '@/components/sidebar-items'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { infoLogger } from '@/lib/logger/logger'
+import { Session } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { cache } from 'react'
 
 interface SidebarListProps {
-  userId?: string
+  sess?: Session
   children?: React.ReactNode
 }
 
-const loadChats = cache(async (userId?: string) => {
+const loadChats = cache(async (sess?: Session) => {
   infoLogger({ message: "loading user chats", status: "INFO", name: "SideBarList" })
-  console.log(userId)
-  return await getChats(userId)
+  const chats = await getChats(sess)
+  infoLogger({ message: "chats loaded successfully", status: "success", name: "SideBarList" })
+  return chats
 })
 
-export async function SidebarList({ userId }: SidebarListProps) {
-  const chats = await loadChats(userId)
+export async function SidebarList({ sess }: SidebarListProps) {
+  const chats = await loadChats(sess)
 
   if (!chats || 'error' in chats) {
     redirect('/')

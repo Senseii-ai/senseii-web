@@ -7,9 +7,10 @@ import { removeChat, shareChat } from '@/app/actions'
 
 import { SidebarActions } from '@/components/sidebar-actions'
 import { SidebarItem } from '@/components/sidebar-item'
+import { IChat } from '@senseii/types'
 
 interface SidebarItemsProps {
-  chats?: Chat[]
+  chats?: IChat[]
 }
 
 export function SidebarItems({ chats }: SidebarItemsProps) {
