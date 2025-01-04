@@ -57,7 +57,7 @@ export async function getChat(id: string, email: string) {
 }
 
 // TODO: Implement remove a single chat functionality.
-export async function removeChat({ id, path }: { id: string; path: string }) {
+export async function removeChat(id: string) {
   const session = await auth()
 
   if (!session) {
@@ -68,7 +68,8 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
 
   await userAPI.deleteChat(session, id)
   revalidatePath('/')
-  return revalidatePath(path)
+  // FIX: maybe this can cause issues.
+  return revalidatePath(`chat/${id}`)
 }
 
 // TODO: Implement clear chat functionality
