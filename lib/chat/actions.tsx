@@ -7,20 +7,11 @@ import {
   createStreamableValue
 } from 'ai/rsc'
 
-import {
-  spinner,
-  BotCard,
-  BotMessage,
-  Stock,
-  Purchase
-} from '@/components/stocks'
+import { BotMessage } from '@/components/chat/message'
 
-import { Events } from '@/components/stocks/events'
-import { Stocks } from '@/components/stocks/stocks'
 import { nanoid } from '@/lib/utils'
 // import { saveChat } from '@/app/actions'
-import { SpinnerMessage, UserMessage } from '@/components/stocks/message'
-import { Chat, Message } from '@/lib/types'
+import { UserMessage } from '@/components/chat/message'
 import { Message as OAIMessage } from 'openai/resources/beta/threads/messages'
 import { auth } from '@/auth'
 import { sendUserMessage } from '@/app/api/chat'
