@@ -1,6 +1,8 @@
-import { axiosInstance } from "../http";
-import { userDTOSchema } from "@senseii/types";
+import { infoLogger } from "@/lib/logger/logger";
+import { axiosInstance, BaseURL, getAuthHeaders } from "../http";
+import { IChat, Result, userDTOSchema } from "@senseii/types";
 import { z } from "zod";
+import { Session } from "next-auth";
 
 export const apiEndpoints = {
   getUsers: {
@@ -12,12 +14,14 @@ export const apiEndpoints = {
 }
 
 export const userAPI = {
-  getAll: async () => {
-    const response = await axiosInstance.get(`/users`)
-    return apiEndpoints.getUsers.response.parse(response.data)
-  },
-  signUp: async () => {
-    const response = await axiosInstance.post("/auth/signup")
-    return apiEndpoints.signUp.response.parse(response.data)
+  getUserChats: async (session: Session): Promise<IChat[]> => {
+    const { user: { email, accessToken } } = session
+    const url = `${BaseURL}/chat/user/${email}/chats`
+    infoLogger({ message: "get user chats", status: "INFO" })
+    const response: Result<IChat[]> = await axiosInstance.get(url, { headers: { Authorization: getAuthHeaders(accessToken) } })
+    if (!response.success) {
+      return []
+    }
+    return response.data
   }
 }

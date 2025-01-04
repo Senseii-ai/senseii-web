@@ -6,31 +6,26 @@ import { auth } from '@/auth'
 import { Chat } from '@/lib/types'
 import { BaseURL } from '@/lib/api/http'
 import { Session } from 'next-auth'
+import { infoLogger } from '@/lib/logger/logger'
+import { IChat } from '@senseii/types'
+import { userAPI } from '@/lib/api/user/users'
 
-export async function getChats(userId?: string | null) {
+export async function getChats(sess?: Session | null) {
+  infoLogger({ message: `getting chats for ${sess}` })
   const session = await auth() as Session
 
-  if (!userId) {
+  if (!sess) {
     return []
   }
 
-  if (userId !== session?.user?.id) {
+  if (sess?.user?.email !== session?.user?.email) {
     return {
       error: 'Unauthorized'
     }
   }
 
-  try {
-    const url = `${BaseURL}/chat/user/${userId}/chats`
-    console.log("trying to get the chats")
-    const response = await fetch(url)
-    const { data } = await response.json()
-    console.log("DATA", data)
-    //FIX: maybe path is going to cause problems.
-    return data as Chat[]
-  } catch (error) {
-    return []
-  }
+  const data = await userAPI.getUserChats(sess)
+  return data
 }
 
 /**
