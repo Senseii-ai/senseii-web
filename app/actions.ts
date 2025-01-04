@@ -5,51 +5,55 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { Chat } from '@/lib/types'
 import { BaseURL } from '@/lib/api/http'
+import { Session } from 'next-auth'
+import { infoLogger } from '@/lib/logger/logger'
+import { IChat } from '@senseii/types'
+import { userAPI } from '@/lib/api/user/users'
+import { AppMessageFromOAIMesssage } from '@/lib/chat/actions'
 
-export async function getChats(userId?: string | null) {
-  const session = await auth()
+export async function getChats(sess?: Session | null) {
+  infoLogger({ message: `getting chats for ${sess}` })
+  const session = (await auth()) as Session
 
-  if (!userId) {
+  if (!sess) {
     return []
   }
 
-  if (userId !== session?.user?.id) {
+  if (sess?.user?.email !== session?.user?.email) {
     return {
       error: 'Unauthorized'
     }
   }
 
-  try {
-    const url = `${BaseURL}/chat/user/${userId}/chats`
-    const response = await fetch(url)
-    const { data } = await response.json()
-    return data as Chat[]
-  } catch (error) {
-    return []
-  }
+  const data = await userAPI.getUserChats(sess)
+  return data
 }
 
 /**
  * getChat returns the messages for a chat Id.
-*/
-export async function getChat(id: string, userId: string) {
+ */
+export async function getChat(id: string, email: string) {
   const session = await auth()
 
-  if (userId !== session?.user?.id) {
+  if (email !== session?.user?.id) {
     return {
       error: 'Unauthorized'
     }
   }
 
-  const url = `${BaseURL}/chat/user/${userId}/chat/${id}`
   // TODO: replace fetch with axios.
-  const response = await fetch(url)
-  const { data } = await response.json()
-
-  if (!data || (userId && data.userId !== userId)) {
+  const response = await userAPI.getChatMessages(session, id)
+  if (!response) {
     return null
   }
-  return data
+
+  const serverMessages = response.messages.map(AppMessageFromOAIMesssage)
+  const finalResponse = {
+    ...response,
+    messages: serverMessages
+  }
+
+  return finalResponse
 }
 
 // TODO: Implement remove a single chat functionality.

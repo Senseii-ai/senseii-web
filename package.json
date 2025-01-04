@@ -30,7 +30,7 @@
     "@radix-ui/react-switch": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.2",
-    "@senseii/types": "^1.2.30",
+    "@senseii/types": "^1.2.35",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.6",
     "@vercel/analytics": "^1.3.1",

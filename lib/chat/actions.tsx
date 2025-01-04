@@ -21,32 +21,35 @@ import { nanoid } from '@/lib/utils'
 // import { saveChat } from '@/app/actions'
 import { SpinnerMessage, UserMessage } from '@/components/stocks/message'
 import { Chat, Message } from '@/lib/types'
+import { Message as OAIMessage } from 'openai/resources/beta/threads/messages'
 import { auth } from '@/auth'
 import { sendUserMessage } from '@/app/api/chat'
 import React from 'react'
 import { Session } from 'next-auth'
+
+//FIX: Currently we are relying on OpenAI to save our thread messages, therefore
+// we are using it's messasge structure to render information. Later on we will
+// save messages in our own database and therefore update the logic.
 
 async function submitUserMessage(content: string) {
   'use server'
 
   const aiState = getMutableAIState<typeof AI>()
   const session = (await auth()) as Session
+
   aiState.update({
     ...aiState.get(),
     messages: [
       ...aiState.get().messages,
       {
         id: nanoid(),
-        role: 'user',
+        role: "user",
         content
       }
     ]
   })
 
-  const stream = await sendUserMessage(
-    aiState.get().chatId,
-    content
-  )
+  const stream = await sendUserMessage(aiState.get().chatId, content)
 
   const readableStream = createStreamableValue(stream)
   const result = {
@@ -62,9 +65,15 @@ async function submitUserMessage(content: string) {
   }
 }
 
+export type ServerMessage = {
+  id: string,
+  role: 'user' | 'assistant';
+  content: string;
+};
+
 export type AIState = {
   chatId: string
-  messages: Message[]
+  messages: ServerMessage[]
 }
 
 export type UIState = {
@@ -84,14 +93,14 @@ export const AI = createAI<AIState, UIState>({
     const session = await auth()
 
     if (session && session.user) {
-      const aiState = getAIState() as Chat
+      const aiState = getAIState() as AIState
 
       if (aiState) {
         const uiState = getUIStateFromAIState(aiState)
         return uiState
       }
     } else {
-      return
+      return []
     }
   },
   onSetAIState: async ({ state }) => {
@@ -106,19 +115,21 @@ export const AI = createAI<AIState, UIState>({
       const userId = session.user.id as string
       const path = `${chatId}`
 
-      const firstMessageContent = messages[0]?.content as string
+      const firstMessageContent = messages[0].content
       const title = firstMessageContent.substring(0, 100)
 
-      const chat: Chat = {
-        id: chatId,
-        title,
-        userId,
-        createdAt,
-        messages,
-        path
-      }
-      // FIX: usually we save conversation state here, but we are depending OpenAI threads to hold the state of Converstaions. This implementation might change in the future.
+      // FIX: usually we save conversation state here, but we are depending OpenAI threads to hold
+      // the state of Converstaions. This implementation might change in the future.
       // await saveChat(chat)
+      // const chat Chat = {
+      //   id: chatId,
+      //   title,
+      //   userId,
+      //   createdAt,
+      //   messages,
+      //   path
+      // }
+
     } else {
       return
     }
@@ -126,8 +137,15 @@ export const AI = createAI<AIState, UIState>({
 })
 
 // VercelMessageFromOpenAIMessage converts OpenAI message to Vercel Supported Message
-const VercelMessageFromOpenAIMessage = (message: any) => {
-  let newMessage: Message
+export const AppMessageFromOAIMesssage = (
+  message: OAIMessage
+): ServerMessage => {
+  let newMessage: ServerMessage = {
+    id: message.id,
+    role: 'user',
+    content: ''
+  }
+
   if (message.content[0].type === 'text') {
     if (message.role === 'assistant') {
       newMessage = {
@@ -142,71 +160,32 @@ const VercelMessageFromOpenAIMessage = (message: any) => {
         content: message.content[0].text.value
       }
     }
-    return newMessage
   }
+  return newMessage
 }
 
-export const getUIStateFromAIState = (aiState: Chat) => {
+export const getUIStateFromAIState = (aiState: AIState) => {
   // write logic here to convert OpenAI messages into Vercel Supported Messages
-  const aiStateMessages = aiState.messages
-    .filter(message => message.role != 'system')
-    .reverse()
+  // FIX: check if we have to reverse things here.
+  console.log("AI STATE", aiState)
 
-  return aiStateMessages.map((message, index) => {
-    const vercelAIMessage = VercelMessageFromOpenAIMessage(message) as Message
+  return aiState.messages.map((message, index) => {
+    // const vercelAIMessage = VercelMessageFromOpenAIMessage(message) as Message
     return {
-      id: vercelAIMessage?.id,
+      id: message?.id,
       display:
         message.role === 'user' ? (
           <UserMessage>
             {React.createElement(
               'div',
               null,
-              vercelAIMessage?.content as string
+              message.content
             )}
           </UserMessage>
-        ) : vercelAIMessage?.role === 'assistant' &&
-          typeof vercelAIMessage.content === 'string' ? (
-          <BotMessage content={vercelAIMessage.content} />
-        ) : null
-    }
-  })
-  // TODO: keeping this for future reference.
-  return aiState.messages
-    .filter(message => message.role !== 'system')
-    .map((message, index) => ({
-      id: `${aiState.chatId}-${index}`,
-      display:
-        message.role === 'tool' ? (
-          message.content.map(tool => {
-            return tool.toolName === 'listStocks' ? (
-              <BotCard>
-                {/* TODO: Infer types based on the tool result*/}
-                {/* @ts-expect-error */}
-                <Stocks props={tool.result} />
-              </BotCard>
-            ) : tool.toolName === 'showStockPrice' ? (
-              <BotCard>
-                {/* @ts-expect-error */}
-                <Stock props={tool.result} />
-              </BotCard>
-            ) : tool.toolName === 'showStockPurchase' ? (
-              <BotCard>
-                {/* @ts-expect-error */}
-                <Purchase props={tool.result} />
-              </BotCard>
-            ) : tool.toolName === 'getEvents' ? (
-              <BotCard>
-                {/* @ts-expect-error */}
-                <Events props={tool.result} />
-              </BotCard>
-            ) : null
-          })
-        ) : message.role === 'user' ? (
-          <UserMessage>{message.content as string}</UserMessage>
-        ) : message.role === 'assistant' &&
+        ) : message?.role === 'assistant' &&
           typeof message.content === 'string' ? (
           <BotMessage content={message.content} />
         ) : null
-    }))
+    }
+  })
 }

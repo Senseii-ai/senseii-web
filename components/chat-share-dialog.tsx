@@ -19,7 +19,7 @@ import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
 
 interface ChatShareDialogProps extends DialogProps {
   chat: Pick<Chat, 'id' | 'title' | 'messages'>
-  shareChat?: (id: string) => ServerActionResult<Chat>
+  shareChat: (id: string) => ServerActionResult<Chat>
   onCopy: () => void
 }
 
@@ -69,7 +69,7 @@ export function ChatShareDialog({
   //           onClick={() => {
   //             // @ts-ignore
   //             startShareTransition(async () => {
-  //               const result = await shareChat(chat.id)
+  //               const result = await shareChat("check id here")
   //
   //               if (result && 'error' in result) {
   //                 toast.error(result.error)

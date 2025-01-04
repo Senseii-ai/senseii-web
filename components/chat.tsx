@@ -12,9 +12,10 @@ import { Message } from '@/lib/types'
 import { usePathname, useRouter } from 'next/navigation'
 import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
 import { toast } from 'sonner'
+import { ServerMessage } from '@/lib/chat/actions'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
-  initialMessages?: Message[]
+  initialMessages?: ServerMessage[]
   id?: string
   session?: Session
   missingKeys: string[]

@@ -82,16 +82,15 @@ const isAuthRoute = (route: string) => {
   }
 }
 
+export const getAuthHeaders = (token: string) => {
+  return `Bearer ${token}`
+}
+
 /**
 * Attaching axios tokens in case of any requests except auth.
 */
 
 axiosInstance.interceptors.request.use(async (config) => {
-  // attach Bearer token if the api route is non-auth.
-  if (!isAuthRoute(config.url as string)) {
-    config.headers["Authorization"] = `Bearer ${config.data.accessToken}`
-    config.data.accessToken = ""
-  }
   return config
 }, (error) => {
   console.error("Error sending request")

@@ -33,7 +33,6 @@ export async function getUser(email: string): Promise<User | undefined> {
   return user
 }
 
-
 export interface AuthResponse {
   code: string
   message: string
@@ -42,18 +41,19 @@ export interface AuthResponse {
 }
 
 export const loginGithub = async () => {
-  return await signIn("github")
+  return await signIn('github')
 }
 
 export const loginGoogle = async () => {
-  return await signIn("google")
+  return await signIn('google')
 }
 
 export async function login(data: UserLoginDTO): Promise<AuthResponse> {
   try {
+    infoLogger({ message: 'credentials login attempt' })
     const validatedData = userLoginDTO.safeParse(data)
     if (!validatedData.success) {
-      infoLogger({ message: "invalid creds", status: "failed" })
+      infoLogger({ message: 'invalid creds', status: 'failed' })
       return {
         code: HTTP.STATUS.BAD_REQUEST.toString(),
         message: HTTP.STATUS_MESSAGE[HTTP.STATUS.BAD_REQUEST],
@@ -62,11 +62,19 @@ export async function login(data: UserLoginDTO): Promise<AuthResponse> {
       }
     }
     const { email, password } = validatedData.data
-    await signIn('credentials', {
+    const result = await signIn('credentials', {
       email,
       password,
       redirect: false
     })
+    if (result?.error) {
+      return {
+        code: HTTP.STATUS.UNAUTHORIZED.toString(),
+        message: result.error,
+        details: '',
+        status: 'failed'
+      }
+    }
     return {
       code: HTTP.STATUS.OK.toString(),
       message: 'login successful',
@@ -74,30 +82,11 @@ export async function login(data: UserLoginDTO): Promise<AuthResponse> {
       status: 'success'
     }
   } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return {
-            code: HTTP.STATUS.BAD_REQUEST.toString(),
-            message: "invalid credentials",
-            details: "",
-            status: "failed"
-          }
-        default: {
-          return {
-            code: "FUck this error",
-            message: "invalid credentials",
-            details: "",
-            status: "failed"
-          }
-        }
-      }
-    }
     return {
-      code: "Unknown Error",
-      message: "I don't know man",
-      details: "",
-      status: "failed"
+      code: 'Unknown Error',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      details: '',
+      status: 'failed'
     }
   }
 }
