@@ -21,12 +21,12 @@ import { IconSpinner } from '@/components/ui/icons'
 
 interface ClearHistoryProps {
   isEnabled: boolean
-  // clearChats: () => ServerActionResult<void>
+  clearChats: () => ServerActionResult<void>
 }
 
 export function ClearHistory({
-  isEnabled = false
-  // clearChats
+  isEnabled = false,
+  clearChats
 }: ClearHistoryProps) {
   const [open, setOpen] = React.useState(false)
   const [isPending, startTransition] = React.useTransition()
