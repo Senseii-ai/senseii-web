@@ -12,7 +12,7 @@ export default function TabComponent() {
         <TabsTrigger value="overview">Overview</TabsTrigger>
       </TabsList>
       <TabsContent value="today" className="md:grid flex flex-col grid-cols-4 space-y-2">
-        <div className="grid grid-cols-4 col-span-4 gap-x-2">
+        <div className="md:grid grid-cols-4 flex flex-col gap-y-4 col-span-4 gap-x-2">
           <div className="md:col-span-1 col-span-2">
             <Movement available={false} />
           </div>

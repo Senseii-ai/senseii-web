@@ -4,7 +4,6 @@ import { IChat, Result, userDTOSchema } from "@senseii/types";
 import { z } from "zod";
 import { Session } from "next-auth";
 import { Message } from "openai/resources/beta/threads/messages";
-import { ServerMessage } from "@/lib/chat/actions";
 
 export const apiEndpoints = {
   getUsers: {
@@ -25,6 +24,18 @@ const layer = "API"
 const name = "userAPI"
 
 export const userAPI = {
+  deleteChat: async (session: Session, chatId: string): Promise<Result<boolean>> => {
+    const { user: { email, accessToken } } = session
+    const url = `${BaseURL}/chat/user/${email}/${chatId}`
+    const response: Result<boolean> = await axiosInstance.delete(url, { headers: { Authorization: getAuthHeaders(accessToken) } })
+    return response
+  },
+  deleteUserChats: async (session: Session): Promise<Result<boolean>> => {
+    const { user: { email, accessToken } } = session
+    const url = `${BaseURL}/chat/user/${email}`
+    const response: Result<boolean> = await axiosInstance.delete(url, { headers: { Authorization: getAuthHeaders(accessToken) } })
+    return response
+  },
   getUserChats: async (session: Session): Promise<IChat[]> => {
     const { user: { email, accessToken } } = session
     const url = `${BaseURL}/chat/user/${email}/chats`

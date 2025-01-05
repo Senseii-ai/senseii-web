@@ -5,7 +5,6 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { Session } from 'next-auth'
 import { infoLogger } from '@/lib/logger/logger'
-import { userAPI } from '@/lib/api/user/users'
 
 export const metadata = {
   title: 'Senseii Fitness App'

@@ -1,10 +1,7 @@
 'use client'
 
-import { Chat } from '@/lib/types'
 import { AnimatePresence, motion } from 'framer-motion'
-
-import { removeChat, shareChat } from '@/app/actions'
-
+import { removeChat } from '@/app/actions'
 import { SidebarActions } from '@/components/sidebar-actions'
 import { SidebarItem } from '@/components/sidebar-item'
 import { IChat } from '@senseii/types'
@@ -23,13 +20,14 @@ export function SidebarItems({ chats }: SidebarItemsProps) {
           chat && (
             <motion.div
               key={chat?.id}
+              className='flex justify-between'
               exit={{
                 opacity: 0,
                 height: 0
               }}
             >
               <SidebarItem index={index} chat={chat} />
-              {/* <SidebarActions chat={chat} removeChat={removeChat} /> */}
+              <SidebarActions chat={chat} removeChat={removeChat} />
             </motion.div>
           )
       )}
