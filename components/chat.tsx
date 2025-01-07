@@ -31,8 +31,13 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
   // new chat trigger effect.
   useEffect(() => {
     if (session?.user) {
+      console.log('PATH JUST BEFORE SHIT HAPPEND', path)
       if (!path.includes('chat') && messages.length === 1) {
-        window.history.replaceState({}, '', `/chat/${id}`)
+        const url = `/chat/${id}`
+        // window.history.replaceState({ ...window.history.state, as: url, url: url }, '', url);
+        // router.replace(`/chat/${id}`, undefined, { shallow: true });
+        window.history.replaceState({}, '', url)
+        // window.history.replaceState({ ...window.history.state, as: url, url: url }, '', url);
       }
     }
     // FIX: maybe remove messages from dependency array.
@@ -41,16 +46,22 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
   // refetching the current chat state with full browser refresh.
   useEffect(() => {
     const messagesLength = aiState.messages?.length
-    console.log("Message Length triggering router refresh", aiState.messages)
+    console.log('Message Length triggering router refresh', aiState.messages)
+    if (messagesLength === 1) {
+      console.log('STATE WAS UPDATED')
+    }
     if (messagesLength === 2) {
-      router.refresh()
+      console.log(
+        'Message Length 2 triggering router refresh',
+        aiState.messages
+      )
+      // router.refresh()
     }
   }, [aiState.messages, router])
 
   // sets chat ID in local storage and database
   useEffect(() => {
     setNewChatId(id)
-
   })
 
   useEffect(() => {

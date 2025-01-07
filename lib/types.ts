@@ -84,3 +84,9 @@ export type Weekday =
   | 'Friday'
   | 'Saturday'
   | 'Sunday'
+
+export type MutableAIState<AIState> = {
+  get: () => AIState;
+  update: (newState: AIState | ((current: AIState) => AIState)) => void;
+  done: ((newState: AIState) => void) | (() => void);
+};

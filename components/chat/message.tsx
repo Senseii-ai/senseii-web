@@ -10,73 +10,8 @@ import { StreamableValue, useStreamableValue } from 'ai/rsc'
 import { useStreamableText } from '@/lib/hooks/use-streamable-text'
 import { spinner } from './spinner'
 
-import { ReadableStream } from "stream/web";
+import { ReadableStream } from 'stream/web'
 import React, { useEffect, useRef, useState } from 'react'
-
-
-interface StreamProcessorProps {
-  stream: ReadableStream<Uint8Array> | null
-  onComplete: (content: string) => void
-}
-
-export const StreamProcessor = React.memo(
-  ({ stream, onComplete }: StreamProcessorProps) => {
-    const hasCompleted = useRef(false)
-    const [streamContent, setStreamContent] = useState('')
-    const [error, setError] = useState<string | null>(null)
-
-    useEffect(() => {
-      if (!stream) {
-        setError('Failed to initialize stream')
-        return
-      }
-
-      const reader = stream.getReader()
-      let fullContent = ''
-
-      async function readStream() {
-        try {
-          while (true) {
-            const { done, value } = await reader.read()
-
-            if (done) {
-              if (!hasCompleted.current && fullContent) {
-                hasCompleted.current = true
-                onComplete(fullContent)
-              }
-              break
-            }
-
-            if (value) {
-              fullContent += value
-              setStreamContent(fullContent)
-            }
-          }
-        } catch (error) {
-          console.error('Error reading stream:', error)
-          setError('Error reading stream')
-        } finally {
-          reader.releaseLock()
-        }
-      }
-
-      readStream()
-
-      return () => {
-        hasCompleted.current = false
-        reader.releaseLock()
-      }
-    }, [stream, onComplete])
-
-    if (error) {
-      return <div className="text-red-500">Error: {error}</div>
-    }
-
-    return (
-      <div className="whitespace-pre-wrap">{streamContent || 'Loading...'}</div>
-    )
-  }
-)
 
 // Different types of message bubbles.
 
@@ -93,14 +28,14 @@ export function UserMessage({ children }: { children: React.ReactNode }) {
   )
 }
 
-export const BotMessageTest = ({ content }: { content: StreamableValue<string> }) => {
+export const BotMessageTest = ({
+  content
+}: {
+  content: StreamableValue<string>
+}) => {
   const text = useStreamableText(content)
 
-  return (
-    <div>
-      {text}
-    </div>
-  )
+  return <div>{text}</div>
 }
 
 export function BotMessage({

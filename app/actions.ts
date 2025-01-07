@@ -29,15 +29,13 @@ export async function getChats(sess?: Session | null) {
   return data
 }
 
-// export async function getChat ()
-
 /**
  * getChat returns the messages for a chat Id.
  */
 export async function getChat(id: string, email: string) {
-  const session = await auth()
+  const session = (await auth()) as Session
 
-  if (email !== session?.user?.id) {
+  if (email !== session?.user?.email) {
     return {
       error: 'Unauthorized'
     }
@@ -46,16 +44,11 @@ export async function getChat(id: string, email: string) {
   // TODO: replace fetch with axios.
   const response = await userAPI.getChatMessages(session, id)
   if (!response) {
+    console.log("API ERROR")
     return null
   }
 
-  const serverMessages = response.messages.map(AppMessageFromOAIMesssage)
-  const finalResponse = {
-    ...response,
-    messages: serverMessages
-  }
-
-  return finalResponse
+  return response
 }
 
 // TODO: Implement remove a single chat functionality.
