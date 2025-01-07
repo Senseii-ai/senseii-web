@@ -65,7 +65,6 @@ const AuthResponseSchema = ApiResponseSchema(
   })
 );
 
-export const BaseURL = process.env.NEXT_BACKEND_API_URL
 
 export const axiosInstance = axios.create({
   baseURL: process.env.NEXT_BACKEND_API_URL,
@@ -91,6 +90,7 @@ export const getAuthHeaders = (token: string) => {
 */
 
 axiosInstance.interceptors.request.use(async (config) => {
+  infoLogger({ message: `METHOD: ${config.method} URL: ${config.url}`, status: 'alert', layer: "AXIOS", name: "REQ INTERCEPTOR" })
   return config
 }, (error) => {
   console.error("Error sending request")

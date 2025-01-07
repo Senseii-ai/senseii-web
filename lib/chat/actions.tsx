@@ -7,7 +7,7 @@ import {
   createStreamableValue
 } from 'ai/rsc'
 
-import { BotMessage } from '@/components/chat/message'
+import { BotMessage, BotMessageTest } from '@/components/chat/message'
 
 import { nanoid } from '@/lib/utils'
 // import { saveChat } from '@/app/actions'
@@ -17,6 +17,7 @@ import { auth } from '@/auth'
 import { sendUserMessage } from '@/app/api/chat'
 import React from 'react'
 import { Session } from 'next-auth'
+import { infoLogger } from '../logger/logger'
 
 //FIX: Currently we are relying on OpenAI to save our thread messages, therefore
 // we are using it's messasge structure to render information. Later on we will
@@ -41,12 +42,47 @@ async function submitUserMessage(content: string) {
   })
 
   const stream = await sendUserMessage(aiState.get().chatId, content)
+  if (!stream) {
+    return {
+      id: nanoid(),
+      display: <div>Failed to get response from server</div>
+
+    }
+  }
 
   const readableStream = createStreamableValue(stream)
+
+  const saveAIState = (value: string) => {
+    infoLogger({ message: "SAVE AI STATE CALLED", status: 'success' })
+    console.log(value)
+    aiState.done({
+      ...aiState.get(), messages: [
+        ...aiState.get().messages,
+        {
+          id: nanoid(),
+          role: "assistant",
+          content: value
+        }
+      ]
+    })
+  }
+
+  // NOTE: Extending the AI state done method, to update the AI state at the end.
+  const originalDone = readableStream.done
+  readableStream.done = (...args: [any] | []) => {
+    // Call the original done method
+    const result = originalDone.apply(readableStream, args);
+
+    // saving AI state with the response.
+    saveAIState(readableStream.value as string);
+
+    return result;
+  };
+
   const result = {
     value: (
       <>
-        <BotMessage content={readableStream.value} />
+        <BotMessageTest content={readableStream.value} />
       </>
     )
   }
@@ -108,6 +144,8 @@ export const AI = createAI<AIState, UIState>({
 
       const firstMessageContent = messages[0].content
       const title = firstMessageContent.substring(0, 100)
+
+      infoLogger({ message: "I should be called twice", status: "failed" })
 
       // FIX: usually we save conversation state here, but we are depending OpenAI threads to hold
       // the state of Converstaions. This implementation might change in the future.

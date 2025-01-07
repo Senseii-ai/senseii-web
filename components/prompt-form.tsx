@@ -15,6 +15,7 @@ import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { nanoid } from 'nanoid'
 import { useRouter } from 'next/navigation'
 import { UserMessage } from './chat/message'
+import { infoLogger } from '@/lib/logger/logger'
 
 export function PromptForm({
   input,
@@ -51,16 +52,18 @@ export function PromptForm({
         if (!value) return
 
         // Optimistically add user message UI
-        setMessages(currentMessages => [
-          ...currentMessages,
-          {
+        setMessages(currentMessages => {
+          return [...currentMessages, {
             id: nanoid(),
             display: <UserMessage>{value}</UserMessage>
-          }
-        ])
+          }]
+        })
 
-        // Submit and get response message
+        infoLogger({ message: "submitting user response" })
+
+        // Submit and get a react component as a response message.
         const responseMessage = await submitUserMessage(value)
+        // Update the UI State with the response message.
         setMessages(currentMessages => [...currentMessages, responseMessage])
       }}
     >

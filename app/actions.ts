@@ -29,6 +29,8 @@ export async function getChats(sess?: Session | null) {
   return data
 }
 
+// export async function getChat ()
+
 /**
  * getChat returns the messages for a chat Id.
  */
