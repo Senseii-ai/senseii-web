@@ -24,6 +24,24 @@ import { IChat, message } from '@senseii/types'
 //FIX: Currently we are relying on OpenAI to save our thread messages, therefore
 // we are using it's messasge structure to render information. Later on we will
 // save messages in our own database and therefore update the logic.
+//
+
+async function saveAIState(value: string) {
+  "use server"
+  const aiState = getMutableAIState<typeof AI>()
+  infoLogger({ message: "FINAL STATE SAVED", status: "failed" })
+  aiState.done({
+    ...aiState.get(),
+    messages: [
+      ...aiState.get().messages,
+      {
+        id: nanoid(),
+        role: 'assistant',
+        content: value
+      }
+    ]
+  })
+}
 
 async function submitUserMessage(content: string) {
   'use server'
@@ -31,6 +49,8 @@ async function submitUserMessage(content: string) {
   const aiState = getMutableAIState<typeof AI>()
   const session = (await auth()) as Session
 
+
+  console.log("IS AI STATE DIRECTLY UPDATED?", aiState.get())
   aiState.update({
     ...aiState.get(),
     messages: [
@@ -43,7 +63,7 @@ async function submitUserMessage(content: string) {
     ]
   })
 
-  console.log("IS AI STATE DIRECTLY UPDATED?", aiState)
+  console.log("IS AI STATE DIRECTLY UPDATED?", aiState.get())
 
   const stream = await sendUserMessage(aiState.get().chatId, content)
   if (!stream) {
@@ -55,20 +75,7 @@ async function submitUserMessage(content: string) {
 
   const readableStream = createStreamableValue(stream)
 
-  async function saveAIState(value: string) {
-    infoLogger({ message: "FINAL STATE SAVED", status: "failed" })
-    aiState.done({
-      ...aiState.get(),
-      messages: [
-        ...aiState.get().messages,
-        {
-          id: nanoid(),
-          role: 'assistant',
-          content: value
-        }
-      ]
-    })
-  }
+
 
   // NOTE: Extending the AI state done method, to update the AI state at the end.
   const originalDone = readableStream.done
@@ -134,8 +141,6 @@ export const AI = createAI<AIState, UIState>({
 
     if (session && session.user) {
       const { chatId, messages } = state
-      console.log("BEFORE UPDATING AI STATE", state)
-      console.log("BEFORE UPDATING AI STATE", state.messages)
 
       const createdAt = new Date().toISOString()
       const userId = session.user.email as string
