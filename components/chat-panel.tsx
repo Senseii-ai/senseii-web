@@ -2,7 +2,7 @@ import * as React from 'react'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { FooterText } from '@/components/footer'
-import { useAIState, useActions, useUIState } from 'ai/rsc'
+import { useActions, useUIState } from 'ai/rsc'
 import type { AI } from '@/lib/chat/actions'
 import { nanoid } from 'nanoid'
 import { UserMessage } from './chat/message'
@@ -22,7 +22,6 @@ export function ChatPanel({
   isAtBottom,
   scrollToBottom
 }: ChatPanelProps) {
-  const [aiState] = useAIState()
   const [messages, setMessages] = useUIState<typeof AI>()
   const { submitUserMessage } = useActions()
 

@@ -6,9 +6,12 @@ import { CodeBlock } from '../ui/codeblock'
 import { MemoizedReactMarkdown } from '../markdown'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
-import { StreamableValue } from 'ai/rsc'
+import { StreamableValue, useStreamableValue } from 'ai/rsc'
 import { useStreamableText } from '@/lib/hooks/use-streamable-text'
 import { spinner } from './spinner'
+
+import { ReadableStream } from 'stream/web'
+import React, { useEffect, useRef, useState } from 'react'
 
 // Different types of message bubbles.
 
@@ -23,6 +26,16 @@ export function UserMessage({ children }: { children: React.ReactNode }) {
       </div>
     </div>
   )
+}
+
+export const BotMessageTest = ({
+  content
+}: {
+  content: StreamableValue<string>
+}) => {
+  const text = useStreamableText(content)
+
+  return <div>{text}</div>
 }
 
 export function BotMessage({

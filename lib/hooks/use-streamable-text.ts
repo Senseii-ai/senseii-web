@@ -9,6 +9,7 @@ export const useStreamableText = (
   )
 
   useEffect(() => {
+
     ; (async () => {
       if (typeof content === 'object') {
         let value = ''
@@ -19,6 +20,7 @@ export const useStreamableText = (
         }
       }
     })()
+
   }, [content])
 
   return rawContent

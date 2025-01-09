@@ -1,6 +1,6 @@
 import { auth } from "@/auth"
 import { Session } from "next-auth"
-import { BaseURL } from "../http"
+import { BaseURL } from "../user/users"
 
 export const chatApi = {
   chat: async ({ chatId, content }: { chatId: string, content: string }) => {

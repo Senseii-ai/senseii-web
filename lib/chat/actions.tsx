@@ -4,10 +4,10 @@ import {
   createAI,
   getMutableAIState,
   getAIState,
-  createStreamableValue
+  createStreamableValue,
 } from 'ai/rsc'
 
-import { BotMessage } from '@/components/chat/message'
+import { BotMessage, BotMessageTest } from '@/components/chat/message'
 
 import { nanoid } from '@/lib/utils'
 // import { saveChat } from '@/app/actions'
@@ -17,10 +17,31 @@ import { auth } from '@/auth'
 import { sendUserMessage } from '@/app/api/chat'
 import React from 'react'
 import { Session } from 'next-auth'
+import { infoLogger } from '../logger/logger'
+import { userAPI } from '../api/user/users'
+import { IChat, message } from '@senseii/types'
 
 //FIX: Currently we are relying on OpenAI to save our thread messages, therefore
 // we are using it's messasge structure to render information. Later on we will
 // save messages in our own database and therefore update the logic.
+//
+
+async function saveAIState(value: string) {
+  "use server"
+  const aiState = getMutableAIState<typeof AI>()
+  infoLogger({ message: "FINAL STATE SAVED", status: "failed" })
+  aiState.done({
+    ...aiState.get(),
+    messages: [
+      ...aiState.get().messages,
+      {
+        id: nanoid(),
+        role: 'assistant',
+        content: value
+      }
+    ]
+  })
+}
 
 async function submitUserMessage(content: string) {
   'use server'
@@ -28,39 +49,55 @@ async function submitUserMessage(content: string) {
   const aiState = getMutableAIState<typeof AI>()
   const session = (await auth()) as Session
 
+
+  console.log("IS AI STATE DIRECTLY UPDATED?", aiState.get())
   aiState.update({
     ...aiState.get(),
     messages: [
       ...aiState.get().messages,
       {
         id: nanoid(),
-        role: "user",
+        role: 'user',
         content
       }
     ]
   })
 
+  console.log("IS AI STATE DIRECTLY UPDATED?", aiState.get())
+
   const stream = await sendUserMessage(aiState.get().chatId, content)
+  if (!stream) {
+    return {
+      id: nanoid(),
+      display: <div>Failed to get response from server</div>
+    }
+  }
 
   const readableStream = createStreamableValue(stream)
-  const result = {
-    value: (
-      <>
-        <BotMessage content={readableStream.value} />
-      </>
-    )
+
+
+
+  // NOTE: Extending the AI state done method, to update the AI state at the end.
+  const originalDone = readableStream.done
+  readableStream.done = (...args: [any] | []) => {
+    // Call the original done method
+    const result = originalDone.apply(readableStream, args)
+    // saving AI state with the response.
+    saveAIState(readableStream.value as string)
+    return result
   }
+
   return {
     id: nanoid(),
-    display: result.value
+    display: <BotMessageTest content={readableStream.value} />
   }
 }
 
 export type ServerMessage = {
-  id: string,
-  role: 'user' | 'assistant';
-  content: string;
-};
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+}
 
 export type AIState = {
   chatId: string
@@ -84,9 +121,10 @@ export const AI = createAI<AIState, UIState>({
     const session = await auth()
 
     if (session && session.user) {
-      const aiState = getAIState() as AIState
+      const aiState = getAIState<typeof AI>() as AIState
 
       if (aiState) {
+        console.log("GET UI STATE", aiState)
         const uiState = getUIStateFromAIState(aiState)
         return uiState
       }
@@ -97,31 +135,43 @@ export const AI = createAI<AIState, UIState>({
   onSetAIState: async ({ state }) => {
     'use server'
 
-    const session = await auth()
+    infoLogger({ message: "I should be called twice", status: "failed" })
+
+    const session = await auth() as Session
 
     if (session && session.user) {
       const { chatId, messages } = state
 
-      const createdAt = new Date()
-      const userId = session.user.id as string
-      const path = `${chatId}`
+      const createdAt = new Date().toISOString()
+      const userId = session.user.email as string
+      const path = `/chat/${chatId}`
 
       const firstMessageContent = messages[0].content
       const title = firstMessageContent.substring(0, 100)
 
-      // FIX: usually we save conversation state here, but we are depending OpenAI threads to hold
-      // the state of Converstaions. This implementation might change in the future.
-      // await saveChat(chat)
-      // const chat Chat = {
-      //   id: chatId,
-      //   title,
-      //   userId,
-      //   createdAt,
-      //   messages,
-      //   path
-      // }
+      messages.map(item => {
+        if (item.role === 'assistant') {
+          // @ts-ignore
+          const text = item.content.curr as string
+          item.content = text
+        }
+      })
 
+      const lastMessage = messages[messages.length - 1]
+
+      const chat: IChat = {
+        id: chatId,
+        title,
+        userId,
+        threadId: '',
+        createdAt: createdAt,
+        messages: [lastMessage],
+        path
+      }
+
+      await userAPI.saveChat(session, chat)
     } else {
+      infoLogger({ message: "This should never run", status: "failed" })
       return
     }
   }
@@ -158,7 +208,7 @@ export const AppMessageFromOAIMesssage = (
 export const getUIStateFromAIState = (aiState: AIState) => {
   // write logic here to convert OpenAI messages into Vercel Supported Messages
   // FIX: check if we have to reverse things here.
-  console.log("AI STATE", aiState)
+  console.log('AI STATE', aiState)
 
   return aiState.messages.map((message, index) => {
     // const vercelAIMessage = VercelMessageFromOpenAIMessage(message) as Message
@@ -167,11 +217,7 @@ export const getUIStateFromAIState = (aiState: AIState) => {
       display:
         message.role === 'user' ? (
           <UserMessage>
-            {React.createElement(
-              'div',
-              null,
-              message.content
-            )}
+            {React.createElement('div', null, message.content)}
           </UserMessage>
         ) : message?.role === 'assistant' &&
           typeof message.content === 'string' ? (

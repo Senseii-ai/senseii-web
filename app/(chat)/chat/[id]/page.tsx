@@ -4,7 +4,7 @@ import { notFound, redirect } from 'next/navigation'
 import { auth } from '@/auth'
 // import { getMissingKeys } from '@/app/actions'
 import { Chat } from '@/components/chat'
-import { AI } from '@/lib/chat/actions'
+import { AI, ServerMessage } from '@/lib/chat/actions'
 import { getChat } from '@/app/actions'
 import { Session } from 'next-auth'
 
@@ -23,43 +23,46 @@ export async function generateMetadata({
     return {}
   }
 
-  const chat = await getChat(params.id, session?.user?.id as string)
+  const chat = await getChat(params.id, session?.user?.email as string)
 
   if (!chat || 'error' in chat) {
-    redirect('/')
+    console.log("GENERATE METADATA FUCKED", chat)
+    redirect('/anotherfuck')
   } else {
     return {
-      title: chat.messages[0].content.toString().slice(0, 50) ?? 'Chat'
+      title: "CHECK meta error"
+      // title: chat.messages[0].content.toString().slice(0, 50) ?? 'Chat'
     }
   }
 }
 
 export default async function ChatPage({ params }: ChatPageProps) {
   const session = (await auth()) as Session
-  // const missingKeys = await getMissingKeys()
   const missingKeys: string[] = []
 
   if (!session?.user) {
     redirect(`/login?next=/chat/${params.id}`)
   }
 
-  const userId = session.user.id as string
-  const chat = await getChat(params.id, userId)
+  const email = session.user.email as string
+  const chat = await getChat(params.id, email)
 
   if (!chat || 'error' in chat) {
-    redirect('/')
-  } else {
-    if (chat.email !== session.user.email) {
-      notFound()
-    }
+    console.log("chat page error", chat)
+    console.log("CHAT PAGE FUCKED")
+    redirect('/fuck')
+    // } else {
+    //   if (chat.id !== session.user.) {
+    //     notFound()
+    //   }
   }
 
   return (
-    <AI initialAIState={{ chatId: params.id, messages: chat.messages }}>
+    <AI initialAIState={{ chatId: params.id, messages: chat.messages as ServerMessage[] }}>
       <Chat
-        id={chat.chatId}
+        id={chat.id}
         session={session}
-        initialMessages={chat.messages}
+        initialMessages={chat.messages as ServerMessage[]}
         missingKeys={missingKeys}
       />
     </AI>

@@ -13,9 +13,17 @@ interface SidebarListProps {
 }
 
 const loadChats = cache(async (sess?: Session) => {
-  infoLogger({ message: "loading user chats", status: "INFO", name: "SideBarList" })
+  infoLogger({
+    message: 'loading user chats',
+    status: 'INFO',
+    name: 'SideBarList'
+  })
   const chats = await getChats(sess)
-  infoLogger({ message: "chats loaded successfully", status: "success", name: "SideBarList" })
+  infoLogger({
+    message: 'chats loaded successfully',
+    status: 'success',
+    name: 'SideBarList'
+  })
   return chats
 })
 
@@ -23,6 +31,7 @@ export async function SidebarList({ sess }: SidebarListProps) {
   const chats = await loadChats(sess)
 
   if (!chats || 'error' in chats) {
+    console.log('I am the culprit')
     redirect('/')
   } else {
     return (

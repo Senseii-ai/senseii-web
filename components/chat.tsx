@@ -3,16 +3,14 @@
 import { cn } from '@/lib/utils'
 import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
-import { EmptyScreen } from '@/components/empty-screen'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 import { useEffect, useState } from 'react'
 import { useUIState, useAIState } from 'ai/rsc'
 import { Session } from 'next-auth'
-import { Message } from '@/lib/types'
 import { usePathname, useRouter } from 'next/navigation'
 import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
 import { toast } from 'sonner'
-import { ServerMessage } from '@/lib/chat/actions'
+import { AI, ServerMessage } from '@/lib/chat/actions'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: ServerMessage[]
@@ -25,26 +23,43 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
   const router = useRouter()
   const path = usePathname()
   const [input, setInput] = useState('')
-  const [messages] = useUIState()
-  const [aiState] = useAIState()
+  const [messages] = useUIState<typeof AI>()
+  const [aiState] = useAIState<typeof AI>()
 
   const [_, setNewChatId] = useLocalStorage('newChatId', id)
 
+  // new chat trigger effect.
   useEffect(() => {
     if (session?.user) {
+      console.log('PATH JUST BEFORE SHIT HAPPEND', path)
       if (!path.includes('chat') && messages.length === 1) {
-        window.history.replaceState({}, '', `/chat/${id}`)
+        const url = `/chat/${id}`
+        // window.history.replaceState({ ...window.history.state, as: url, url: url }, '', url);
+        // router.replace(`/chat/${id}`, undefined, { shallow: true });
+        window.history.replaceState({}, '', url)
+        // window.history.replaceState({ ...window.history.state, as: url, url: url }, '', url);
       }
     }
+    // FIX: maybe remove messages from dependency array.
   }, [id, path, session?.user, messages])
 
+  // refetching the current chat state with full browser refresh.
   useEffect(() => {
     const messagesLength = aiState.messages?.length
+    console.log('Message Length triggering router refresh', aiState.messages)
+    if (messagesLength === 1) {
+      console.log('STATE WAS UPDATED')
+    }
     if (messagesLength === 2) {
-      router.refresh()
+      console.log(
+        'Message Length 2 triggering router refresh',
+        aiState.messages
+      )
+      // router.refresh()
     }
   }, [aiState.messages, router])
 
+  // sets chat ID in local storage and database
   useEffect(() => {
     setNewChatId(id)
   })
@@ -63,6 +78,7 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
       className="group w-full overflow-auto pl-0 peer-[[data-state=open]]:lg:pl-[250px] peer-[[data-state=open]]:xl:pl-[300px]"
       ref={scrollRef}
     >
+      {/* rendering empty message list */}
       <div
         className={cn('pb-[200px] pt-4 md:pt-10', className)}
         ref={messagesRef}
