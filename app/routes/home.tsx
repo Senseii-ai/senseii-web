@@ -1,3 +1,4 @@
+import { ModeToggle } from "~/components/mode-toggle";
 import type { Route } from "./+types/home";
 import { Button } from "~/components/ui/button";
 
@@ -10,6 +11,6 @@ export function meta({ }: Route.MetaArgs) {
 
 export default function Home() {
   return (
-    <div className="flex items-center justify-center h-full"><Button>Hello</Button></div>
+    <div className="flex items-center justify-center h-full"><ModeToggle /></div>
   )
 }
