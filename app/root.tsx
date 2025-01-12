@@ -7,12 +7,15 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { Toaster } from "./components/ui/toaster";
 
 import styles from "./tailwind.css?url"
 import { PreventFlashOnWrongTheme, ThemeProvider, useTheme } from "remix-themes";
 import { themeSessionResolver } from "./sessions.server";
 import clsx from "clsx";
 import React from "react";
+import { rootAuthLoader } from "@clerk/remix/ssr.server"
+import { ClerkApp } from "@clerk/remix"
 
 
 export const links: LinksFunction = () => [
@@ -28,17 +31,24 @@ export const links: LinksFunction = () => [
   },
 ];
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { getTheme } = await themeSessionResolver(request)
-  return {
-    theme: getTheme()
-  }
+export async function loader(args: LoaderFunctionArgs) {
+  return rootAuthLoader(args, async ({ request }) => {
+    const { userId, getToken } = request.auth
+    const { getTheme } = await themeSessionResolver(args.request)
+    return {
+      theme: getTheme(),
+      userId: userId,
+      getToken: getToken,
+    }
+  })
 }
 
-export default function AppWithProviders() {
-  const data = useLoaderData<typeof loader>()
+export default ClerkApp(AppWithProviders)
+
+export function AppWithProviders() {
+  const { theme } = useLoaderData<typeof loader>()
   return (
-    <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
+    <ThemeProvider specifiedTheme={theme} themeAction="/action/set-theme">
       <Layout>
         <App />
       </Layout>
@@ -59,6 +69,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="h-screen">
+        <Toaster />
         {children}
         <ScrollRestoration />
         <Scripts />
