@@ -14,6 +14,8 @@ import { PreventFlashOnWrongTheme, ThemeProvider, useTheme } from "remix-themes"
 import { themeSessionResolver } from "./sessions.server";
 import clsx from "clsx";
 import React from "react";
+import { rootAuthLoader } from "@clerk/remix/ssr.server"
+import { ClerkApp } from "@clerk/remix"
 
 
 export const links: LinksFunction = () => [
@@ -29,14 +31,21 @@ export const links: LinksFunction = () => [
   },
 ];
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { getTheme } = await themeSessionResolver(request)
-  return {
-    theme: getTheme(),
-  }
+export async function loader(args: LoaderFunctionArgs) {
+  return rootAuthLoader(args, async ({ request }) => {
+    const { userId, getToken } = request.auth
+    const { getTheme } = await themeSessionResolver(args.request)
+    return {
+      theme: getTheme(),
+      userId: userId,
+      getToken: getToken,
+    }
+  })
 }
 
-export default function AppWithProviders() {
+export default ClerkApp(AppWithProviders)
+
+export function AppWithProviders() {
   const { theme } = useLoaderData<typeof loader>()
   return (
     <ThemeProvider specifiedTheme={theme} themeAction="/action/set-theme">
