@@ -7,6 +7,7 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { Toaster } from "./components/ui/toaster";
 
 import styles from "./tailwind.css?url"
 import { PreventFlashOnWrongTheme, ThemeProvider, useTheme } from "remix-themes";
@@ -31,14 +32,14 @@ export const links: LinksFunction = () => [
 export async function loader({ request }: LoaderFunctionArgs) {
   const { getTheme } = await themeSessionResolver(request)
   return {
-    theme: getTheme()
+    theme: getTheme(),
   }
 }
 
 export default function AppWithProviders() {
-  const data = useLoaderData<typeof loader>()
+  const { theme } = useLoaderData<typeof loader>()
   return (
-    <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
+    <ThemeProvider specifiedTheme={theme} themeAction="/action/set-theme">
       <Layout>
         <App />
       </Layout>
@@ -59,6 +60,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="h-screen">
+        <Toaster />
         {children}
         <ScrollRestoration />
         <Scripts />
