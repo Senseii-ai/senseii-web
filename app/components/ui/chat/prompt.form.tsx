@@ -6,10 +6,6 @@ import { useEnterSubmit } from "~/hooks/use-enter-submit"
 import React from "react"
 import { Form, useSubmit } from "@remix-run/react"
 
-export function action() {
-  console.log("I was submitted")
-}
-
 export default function PromptForm() {
   const { formRef, onKeyDown } = useEnterSubmit()
   const [input, setInput] = React.useState("")
