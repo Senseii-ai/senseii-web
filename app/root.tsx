@@ -20,6 +20,8 @@ import clsx from "clsx";
 import React from "react";
 import { rootAuthLoader } from "@clerk/remix/ssr.server";
 import { ClerkApp } from "@clerk/remix";
+import { ModeToggle } from "./components/mode-toggle";
+import { TailwindIndicator } from "./components/ui/tailwind.indicator";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -84,7 +86,11 @@ function Layout({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <div>
+      <div className="absolute top-5 right-5">
+        <ModeToggle />
+      </div>
       <Outlet />
+      <TailwindIndicator />
     </div>
   );
 }

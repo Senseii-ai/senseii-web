@@ -1,10 +1,12 @@
 import { getAuth } from "@clerk/remix/ssr.server";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { redirect } from "@remix-run/react";
+import { Link, redirect, useLoaderData } from "@remix-run/react";
 import { Card, CardContent } from "~/components/ui/card";
 import { ComboboxItem } from "~/components/ui/dashboard/combobox";
 import TabComponent from "~/components/ui/dashboard/dashboard-tabs";
 import DashboardNav from "~/components/ui/dashboard/dashboard.nav";
+import { HiPlus } from "react-icons/hi2";
+import { Button } from "~/components/ui/button";
 
 const goals: ComboboxItem[] = [
   {
@@ -42,10 +44,15 @@ export async function loader(args: LoaderFunctionArgs) {
   //     'Authorization': `Bearer ${token}`
   //   }
   // });
-  return {}
+  return { goals: [] }
 }
 
+// NOTE: Handle the section for when user profile is not created.
 export default function Index() {
+  const { goals } = useLoaderData<typeof loader>()
+  if (goals.length === 0) {
+    return <EmptyDashboard />
+  }
   return (
     <Card className="py-5 px-2 w-full">
       <CardContent>
@@ -55,7 +62,21 @@ export default function Index() {
   )
 }
 
-
+export function EmptyDashboard() {
+  return (
+    <div className="flex flex-col mx-20 h-screen items-center justify-center">
+      <div className="h-1/3 flex flex-col justify-between">
+        <h2>You have no goals defined yet, please add one to get started</h2>
+        <div className="space-y-2">
+          <Link to={"/chat"}>
+            <Button className="w-full"><HiPlus /></Button>
+          </Link>
+          <p className="text-sm text-muted-foreground text-center">Click the plus icon to start defining your goal.</p>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export function GoalDashboard() {
   return (
