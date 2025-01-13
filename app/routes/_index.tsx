@@ -1,6 +1,6 @@
 import { getAuth } from "@clerk/remix/ssr.server";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { redirect, useLoaderData } from "@remix-run/react";
+import { Link, redirect, useLoaderData } from "@remix-run/react";
 import { Card, CardContent } from "~/components/ui/card";
 import { ComboboxItem } from "~/components/ui/dashboard/combobox";
 import TabComponent from "~/components/ui/dashboard/dashboard-tabs";
@@ -44,9 +44,10 @@ export async function loader(args: LoaderFunctionArgs) {
   //     'Authorization': `Bearer ${token}`
   //   }
   // });
-  return { goals: [1] }
+  return { goals: [] }
 }
 
+// NOTE: Handle the section for when user profile is not created.
 export default function Index() {
   const { goals } = useLoaderData<typeof loader>()
   if (goals.length === 0) {
@@ -67,7 +68,9 @@ export function EmptyDashboard() {
       <div className="h-1/3 flex flex-col justify-between">
         <h2>You have no goals defined yet, please add one to get started</h2>
         <div className="space-y-2">
-          <Button className="w-full"><HiPlus /></Button>
+          <Link to={"/chat"}>
+            <Button className="w-full"><HiPlus /></Button>
+          </Link>
           <p className="text-sm text-muted-foreground text-center">Click the plus icon to start defining your goal.</p>
         </div>
       </div>
