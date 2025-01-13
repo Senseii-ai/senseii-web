@@ -1,6 +1,7 @@
 import { getAuth } from "@clerk/remix/ssr.server";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/react";
+import { Card, CardContent } from "~/components/ui/card";
 import { ComboboxItem } from "~/components/ui/dashboard/combobox";
 import TabComponent from "~/components/ui/dashboard/dashboard-tabs";
 import DashboardNav from "~/components/ui/dashboard/dashboard.nav";
@@ -44,14 +45,13 @@ export async function loader(args: LoaderFunctionArgs) {
   return {}
 }
 
-
-// This page will not load if the user does not exist.
 export default function Index() {
   return (
-    <div className="h-full w-full">
-      <h3>Dashboard page</h3>
-      <GoalDashboard />
-    </div>
+    <Card className="py-5 px-2 w-full">
+      <CardContent>
+        <GoalDashboard />
+      </CardContent>
+    </Card>
   )
 }
 
@@ -59,7 +59,7 @@ export default function Index() {
 
 export function GoalDashboard() {
   return (
-    <div className="container my-5 space-y-5">
+    <div className="space-y-5">
       <h1 className="text-4xl font-bold">Dashboard</h1>
       <DashboardNav goalSelectorProps={{ comboboxItems: goals }} />
       <TabComponent />

@@ -24,13 +24,12 @@ export default function Meals({ available }: MealsProps) {
           <Macros />
           {/* TODO: Add section for Micros */}
         </div>
-
           : <MealsNotAvailable />}
         <Carousel
           opts={{
             align: "start",
           }}
-          className="w-full max-w-sm md:hidden"
+          className="w-full max-w-xs md:hidden"
         >
           <CarouselContent>
             {Array.from({ length: 5 }).map((_, index) => (

@@ -24,9 +24,7 @@ export default function DashboardCardWrapper({ showFooter, showAddButton, header
         </div>
       </CardHeader>
       <CardContent>
-        <div>
-          {children}
-        </div>
+        {children}
       </CardContent>
       {showFooter &&
         <CardFooter>

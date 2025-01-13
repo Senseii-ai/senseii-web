@@ -9,14 +9,17 @@ import {
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { Toaster } from "./components/ui/toaster";
 
-import styles from "./tailwind.css?url"
-import { PreventFlashOnWrongTheme, ThemeProvider, useTheme } from "remix-themes";
+import styles from "./tailwind.css?url";
+import {
+  PreventFlashOnWrongTheme,
+  ThemeProvider,
+  useTheme,
+} from "remix-themes";
 import { themeSessionResolver } from "./sessions.server";
 import clsx from "clsx";
 import React from "react";
-import { rootAuthLoader } from "@clerk/remix/ssr.server"
-import { ClerkApp } from "@clerk/remix"
-
+import { rootAuthLoader } from "@clerk/remix/ssr.server";
+import { ClerkApp } from "@clerk/remix";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -27,40 +30,40 @@ export const links: LinksFunction = () => [
   },
   {
     rel: "stylesheet",
-    href: styles
+    href: styles,
   },
 ];
 
 export async function loader(args: LoaderFunctionArgs) {
   return rootAuthLoader(args, async ({ request }) => {
-    const { userId, getToken } = request.auth
-    const { getTheme } = await themeSessionResolver(args.request)
+    const { userId, getToken } = request.auth;
+    const { getTheme } = await themeSessionResolver(args.request);
     return {
       theme: getTheme(),
       userId: userId,
       getToken: getToken,
-    }
-  })
+    };
+  });
 }
 
-export default ClerkApp(AppWithProviders)
+export default ClerkApp(AppWithProviders);
 
 export function AppWithProviders() {
-  const { theme } = useLoaderData<typeof loader>()
+  const { theme } = useLoaderData<typeof loader>();
   return (
     <ThemeProvider specifiedTheme={theme} themeAction="/action/set-theme">
       <Layout>
         <App />
       </Layout>
     </ThemeProvider>
-  )
+  );
 }
 
 function Layout({ children }: { children: React.ReactNode }) {
-  const data = useLoaderData<typeof loader>()
-  const [theme] = useTheme()
+  const data = useLoaderData<typeof loader>();
+  const [theme] = useTheme();
   return (
-    <html lang="en" className={clsx(theme)}>
+    <html lang="en" className={clsx(theme, "h-full")}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -68,16 +71,20 @@ function Layout({ children }: { children: React.ReactNode }) {
         <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
         <Links />
       </head>
-      <body className="h-screen">
+      <body className="h-full">
         <Toaster />
-        {children}
+        <div className="min-h-full flex flex-col">{children}</div>
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
-  )
+  );
 }
 
 function App() {
-  return <Outlet />
+  return (
+    <div>
+      <Outlet />
+    </div>
+  );
 }

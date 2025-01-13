@@ -10,7 +10,7 @@ export default function Overview() {
     <div className="space-y-2">
       <h1 className="text-xl font-semibold">Goal Name</h1>
 
-      <div className="grid grid-cols-4 gap-x-2">
+      <div className="md:grid grid-cols-4 gap-x-2 flex flex-col gap-y-2">
         <Card className="col-span-3">
           <CardHeader>
             <CardTitle>
@@ -27,7 +27,7 @@ export default function Overview() {
         <GoalProgress showFooter={false} />
       </div>
 
-      <div className="grid grid-cols-4 gap-x-2 gap-y-2">
+      <div className="md:grid grid-cols-4 flex flex-col gap-x-2 gap-y-2">
         <div className="col-span-2">
           <CurveChart title="Descipline" />
         </div>
