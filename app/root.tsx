@@ -8,6 +8,7 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { Toaster } from "./components/ui/toaster";
+import { ManifestLink } from '@remix-pwa/sw';
 
 import styles from "./tailwind.css?url";
 import {
@@ -71,9 +72,17 @@ function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={clsx(theme, "h-full")}>
       <head>
+        <ManifestLink manifestUrl="/manifest.webmanifest" />
+        <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <meta name="apple-mobile-web-app-title" content="senseii" />
+        <meta name="application-name" content="senseii" />
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
+        <link rel="manifest" href="/manifest.webmanifest" />
         <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
         <Links />
       </head>
