@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "@remix-run/react";
 // import GoalSelector, { GoalSelectorProps } from "./goal-selector";
 import React from "react";

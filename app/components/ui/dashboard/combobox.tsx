@@ -1,5 +1,3 @@
-"use client"
-
 import React from "react";
 import { Popover, PopoverContent } from "../popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
