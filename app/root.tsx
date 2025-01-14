@@ -22,6 +22,7 @@ import { rootAuthLoader } from "@clerk/remix/ssr.server";
 import { ClerkApp } from "@clerk/remix";
 import { ModeToggle } from "./components/mode-toggle";
 import { TailwindIndicator } from "./components/ui/tailwind.indicator";
+import { TooltipProvider } from "./components/ui/tooltip";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -54,9 +55,12 @@ export function AppWithProviders() {
   const { theme } = useLoaderData<typeof loader>();
   return (
     <ThemeProvider specifiedTheme={theme} themeAction="/action/set-theme">
-      <Layout>
-        <App />
-      </Layout>
+      <TooltipProvider>
+        <Layout>
+          <App />
+        </Layout>
+      </TooltipProvider>
+
     </ThemeProvider>
   );
 }
