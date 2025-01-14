@@ -23,11 +23,11 @@
 # For more information on GitHub Actions for Azure: https://github.com/Azure/Actions
 # For more information on the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # For more samples to get started with GitHub Action workflows to deploy to Azure: https://github.com/Azure/actions-workflow-samples
-
-name: Build and deploy a container to an Azure Web App
+#
+# name: Build and deploy a container to an Azure Web App
 
 env:
-  AZURE_WEBAPP_NAME: senseii-dev #set this to the name of your Azure Web App
+  AZURE_WEBAPP_NAME: senseii-dev # Set this to the name of your Azure Web App
 
 on:
   push:
@@ -36,33 +36,45 @@ on:
 
 permissions:
   contents: read
+  packages: write # Ensure this is set for pushing images to GHCR
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out the repository
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
+        uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GitHub container registry
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ github.token }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Lowercase the repo name and username
-        run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+      - name: Log environment variables
+        run: |
+          echo "GITHUB_REPOSITORY=${GITHUB_REPOSITORY}"
+          echo "GITHUB_ACTOR=${GITHUB_ACTOR}"
+          echo "Repository (lowercased): ${GITHUB_REPOSITORY,,}"
+          echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
 
       - name: Build and push container image to registry
-        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
+        uses: docker/build-push-action@v5
         with:
           push: true
           tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
           file: ./Dockerfile
+      - name: Log Docker Build Output
+        if: failure()
+        run: |
+          echo "Docker build or push failed."
+          echo "Check the previous logs for more information."
+        continue-on-error: true
 
   deploy:
     permissions:
