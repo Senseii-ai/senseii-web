@@ -1,6 +1,5 @@
 import { ServerMessage } from '~/routes/chat.$'
 import { Separator } from '../separator'
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
 import { BotMessage, UserMessage } from './message'
 
 export interface ChatList {
