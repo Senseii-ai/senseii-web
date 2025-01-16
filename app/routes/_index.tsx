@@ -1,16 +1,11 @@
 import { getAuth } from "@clerk/remix/ssr.server";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Form, Link, redirect, useLoaderData, useNavigate, useNavigation } from "@remix-run/react";
+import { redirect, useLoaderData } from "@remix-run/react";
 import { Card, CardContent } from "~/components/ui/card";
 import { ComboboxItem } from "~/components/ui/dashboard/combobox";
 import TabComponent from "~/components/ui/dashboard/dashboard-tabs";
 import DashboardNav from "~/components/ui/dashboard/dashboard.nav";
-import { HiPlus } from "react-icons/hi2";
-import { Button } from "~/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
-import { Label } from "~/components/ui/label";
-import { Input } from "~/components/ui/input";
-import { LoadingSpinner, spinner } from "~/components/ui/spinner";
+import CreateGoalModal from "~/components/ui/chat/create.goal";
 
 const goals: ComboboxItem[] = [
   {
@@ -40,14 +35,6 @@ export async function loader(args: LoaderFunctionArgs) {
     return redirect('/sign-in')
   }
 
-  // const token = await getToken();  // Clerk automatically provides this
-
-  // Forward the token to your Express backend
-  // const response = await fetch('http://localhost:9090/health', {
-  //   headers: {
-  //     'Authorization': `Bearer ${token}`
-  //   }
-  // });
   return { goals: [] }
 }
 
@@ -67,50 +54,11 @@ export default function Index() {
 }
 
 export function EmptyDashboard() {
-  const navigation = useNavigation()
-  const isSubmitting = navigation.formAction === "/create-goal"
-
   return (
     <div className="flex flex-col mx-20 h-screen items-center justify-center">
       <div className="h-1/3 flex flex-col justify-between items-center max-w-80">
         <h2>You have no goals defined yet, please add one to get started</h2>
-        <Dialog >
-          <DialogTrigger className="w-full">
-            <Button className="w-full max-w-24"><HiPlus /></Button>
-          </DialogTrigger>
-          <DialogContent className="w-11/12">
-            <DialogHeader>
-              <DialogTitle>Epic goals need Epic Names</DialogTitle>
-            </DialogHeader>
-            <div>
-              {isSubmitting ?
-                <div className="flex flex-col bg-red-50 items-center justify-center gap-y-5">
-                  <div>
-                    <h5 className="font-semibold">Creating your Goal</h5>
-                  </div>
-                  <div>
-                    <LoadingSpinner size={32} />
-                  </div>
-                </div>
-                :
-                <div className="flex flex-col gap-y-2">
-                  <Form method="POST" action="/create-goal" className="flex flex-col gap-y-2">
-                    <div className="text-left-y-2">
-                      <Label>Goal Name</Label>
-                      <Input name="title" required={true} />
-                    </div>
-                    <div className="w-full">
-                      <Button type="submit" className="w-full max-w-24" size={"sm"}>Done</Button>
-                    </div>
-                  </Form>
-                  <DialogFooter className="sm:justify-start">
-                    <p className="text-sm text-muted-foreground">you can edit it later.</p>
-                  </DialogFooter>
-                </div>
-              }
-            </div>
-          </DialogContent>
-        </Dialog>
+        <CreateGoalModal />
         <p className="text-sm text-muted-foreground text-center">Click the plus icon to start defining your goal.</p>
       </div>
     </div>
