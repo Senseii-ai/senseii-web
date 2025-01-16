@@ -6,7 +6,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Toaster } from "./components/ui/toaster";
 import { ManifestLink } from '@remix-pwa/sw';
 
@@ -25,6 +25,14 @@ import { ModeToggle } from "./components/mode-toggle";
 import { TailwindIndicator } from "./components/ui/tailwind.indicator";
 import { TooltipProvider } from "./components/ui/tooltip";
 
+export const meta: MetaFunction = () => [
+  {
+    charset: 'utf-8',
+    title: 'New Remix App',
+    viewport: 'width=device-width,initial-scale=1',
+  },
+]
+
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -40,12 +48,13 @@ export const links: LinksFunction = () => [
 
 export async function loader(args: LoaderFunctionArgs) {
   return rootAuthLoader(args, async ({ request }) => {
-    const { userId, getToken } = request.auth;
+    const { sessionId, userId, getToken } = request.auth;
     const { getTheme } = await themeSessionResolver(args.request);
     return {
       theme: getTheme(),
       userId: userId,
       getToken: getToken,
+      sessionId: sessionId
     };
   });
 }
@@ -61,7 +70,6 @@ export function AppWithProviders() {
           <App />
         </Layout>
       </TooltipProvider>
-
     </ThemeProvider>
   );
 }
@@ -86,7 +94,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
         <Links />
       </head>
-      <body className="h-full">
+      <body className="h-screen">
         <Toaster />
         <div className="min-h-full flex flex-col">{children}</div>
         <ScrollRestoration />
@@ -98,7 +106,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
 function App() {
   return (
-    <div>
+    <div className="h-full">
       <div className="absolute top-5 right-5">
         <ModeToggle />
       </div>

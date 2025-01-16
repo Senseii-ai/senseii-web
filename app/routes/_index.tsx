@@ -1,11 +1,11 @@
-import { getAuth } from "@clerk/remix/ssr.server";
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { redirect, useLoaderData } from "@remix-run/react";
+import type { MetaFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { Card, CardContent } from "~/components/ui/card";
 import { ComboboxItem } from "~/components/ui/dashboard/combobox";
 import TabComponent from "~/components/ui/dashboard/dashboard-tabs";
 import DashboardNav from "~/components/ui/dashboard/dashboard.nav";
 import CreateGoalModal from "~/components/ui/chat/create.goal";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/remix";
 
 const goals: ComboboxItem[] = [
   {
@@ -29,12 +29,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export async function loader(args: LoaderFunctionArgs) {
-  const { userId } = await getAuth(args)
-  if (!userId) {
-    return redirect('/sign-in')
-  }
-
+export async function loader() {
   return { goals: [] }
 }
 
@@ -45,11 +40,21 @@ export default function Index() {
     return <EmptyDashboard />
   }
   return (
-    <Card className="py-5 px-2 w-full">
-      <CardContent>
-        <GoalDashboard />
-      </CardContent>
-    </Card>
+    <div className="h-screen">
+      <SignedIn>
+        <Card className="py-5 px-2 w-full">
+          <CardContent>
+            <GoalDashboard />
+          </CardContent>
+        </Card>
+      </SignedIn>
+      <SignedOut>
+        <h1>You are Signed Out</h1>
+        <p className="text-sm bg-muted-foreground">Please signin to continue</p>
+        <SignInButton />
+      </SignedOut>
+    </div>
+
   )
 }
 
