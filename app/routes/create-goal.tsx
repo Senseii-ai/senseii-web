@@ -12,7 +12,6 @@ import { LoadingSpinner } from "~/components/ui/spinner";
 import { PlusIcon } from "lucide-react";
 
 export async function loader(args: LoaderFunctionArgs) {
-  console.log("was I ever run")
   const { userId, getToken } = await getAuth(args)
   const token = await getToken()
   console.log("in create goal loader", userId, token)
@@ -20,7 +19,6 @@ export async function loader(args: LoaderFunctionArgs) {
 }
 
 export async function action(args: ActionFunctionArgs) {
-  console.log("I was run")
   const formData = await args.request.formData()
   const { userId, getToken } = await getAuth(args)
 
