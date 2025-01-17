@@ -14,7 +14,6 @@ export type ServerMessage = z.infer<typeof serverMessage>
 export async function loader(args: LoaderFunctionArgs) {
   invariant(args.params.chatId, "Expected params.chatId")
   const { getToken } = await getAuth(args)
-  console.log("url", args.params)
   const token = await getToken()
   const chats = await httpGet<IChat>(`chat/${args.params.chatId}`, token as string)
   if (!chats.success) {
@@ -48,7 +47,7 @@ export default function Chat() {
       )}
       <div className="fixed inset-x-0 bottom-0 w-full mx-auto max-w-2xl sm:px-4">
         <div className="mx-auto sm:max-w-2xl sm:px-4">
-          <div className="space-y-4 border-t bg-background px-4 py-3 shadow-lg sm:rounded-t-xl sm:border md:py-4">
+          <div className="space-y-4 border-t px-4 py-3 shadow-lg sm:rounded-t-xl sm:border md:py-4">
             <PromptForm />
           </div>
         </div>
