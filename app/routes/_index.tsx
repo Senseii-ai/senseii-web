@@ -7,24 +7,8 @@ import DashboardNav from "~/components/ui/dashboard/dashboard.nav";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/remix";
 import CreateGoalModal from "./create-goal";
 import { BE_ROUTES, httpGet } from "~/lib/http";
-import { UserGoals } from "@senseii/types";
 import { getAuth } from "@clerk/remix/ssr.server";
 import { toast } from "~/hooks/use-toast";
-
-const goals: ComboboxItem[] = [
-  {
-    value: "loose weight",
-    label: "Loose weight",
-  },
-  {
-    value: "gain weight",
-    label: "Gain weight",
-  },
-  {
-    value: "improve cardio health",
-    label: "Improve Cardio Health",
-  },
-]
 
 export const meta: MetaFunction = () => {
   return [
@@ -39,10 +23,10 @@ export async function loader(args: LoaderFunctionArgs) {
   if (!userId || !token) {
     return redirect('/sign-in?redirect_url=' + '/')
   }
-  const userGoals = await httpGet<UserGoals[]>(BE_ROUTES.getUserGoals, token)
+  const userGoals = await httpGet<UserGoalItem[]>(BE_ROUTES.getUserGoals, token)
   // if not successful, some internal server error
   if (!userGoals.success) {
-    return json({ error: userGoals.error.message, goals: [] })
+    return json({ error: userGoals.error.message, goals: [] as UserGoalItem[] })
   }
   return { error: null, goals: userGoals.data }
 }
@@ -61,7 +45,7 @@ export default function Index() {
       <SignedIn>
         <Card className="py-5 px-2 w-full">
           <CardContent>
-            <GoalDashboard />
+            <GoalDashboard goals={goals} />
           </CardContent>
         </Card>
       </SignedIn>
@@ -87,12 +71,29 @@ export function EmptyDashboard() {
   )
 }
 
-export function GoalDashboard() {
+export interface UserGoalItem {
+  goalId: string,
+  userId: string,
+  title: string,
+  chatId: string,
+  description: string,
+  startDate: string,
+  endDate: string
+}
+
+export function GoalDashboard({ goals }: { goals: UserGoalItem[] }) {
+  const goalSelectors = goals.map((item): ComboboxItem => {
+    return {
+      value: item.title,
+      label: item.title
+    }
+  })
+
   return (
     <div className="space-y-5">
       <h1 className="text-4xl font-bold">Dashboard</h1>
-      <DashboardNav goalSelectorProps={{ comboboxItems: goals }} />
-      <TabComponent />
+      <DashboardNav goalSelectorProps={{ comboboxItems: goalSelectors }} />
+      <TabComponent chatId={goals[0].chatId} />
     </div>
   )
 }
