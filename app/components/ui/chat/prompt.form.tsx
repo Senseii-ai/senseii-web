@@ -22,13 +22,13 @@ export default function PromptForm() {
       // Use Remix's useSubmit to programmatically submit the form
       submit(e.currentTarget)
     }}>
-      <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden pr-14 pl-0 sm:rounded-md sm:border sm:pl-0">
+      <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden pr-20 sm:rounded-md sm:border sm:pl-0">
         <Textarea
           ref={inputRef}
           tabIndex={0}
           onKeyDown={onKeyDown}
           placeholder="Send a message."
-          className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
+          className="min-h-[60px] w-full resize-none outline-purple-500 focus-within:border-none bg-transparent px-4 py-[1.3rem] sm:text-sm  ring-inset focus:ring-2"
           autoFocus
           spellCheck={false}
           autoComplete="off"
@@ -38,10 +38,10 @@ export default function PromptForm() {
           value={input}
           onChange={e => setInput(e.target.value)}
         />
-        <div className="absolute right-0 top-[9px] sm:right-1">
+        <div className="absolute right-0 sm:top-0 top-[1px] sm:right-0">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button type="submit" size="icon" className="size-12" disabled={input === ''}>
+              <Button type="submit" size="icon" className="size-16" disabled={input === ''}>
                 <IconArrowElbow />
                 <span className="sr-only">Send message</span>
               </Button>
@@ -53,5 +53,3 @@ export default function PromptForm() {
     </Form>
   )
 }
-
-

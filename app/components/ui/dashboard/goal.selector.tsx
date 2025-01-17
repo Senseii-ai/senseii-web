@@ -3,7 +3,7 @@ import Combobox, { ComboboxItem } from "./combobox";
 
 export interface GoalSelectorProps {
   user?: UserProfile,
-  comboboxItems: ComboboxItem[]
+  comboboxItems: ComboboxItem[],
 }
 
 export default function GoalSelector({ comboboxItems }: GoalSelectorProps) {

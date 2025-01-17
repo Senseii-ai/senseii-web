@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
 import { Form, useNavigation } from "@remix-run/react";
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect } from "@remix-run/node"
+import { ActionFunctionArgs, redirect } from "@remix-run/node"
 import { CreateUserGoalDTO } from "@senseii/types"
 import { nanoid } from "nanoid"
 import { BE_ROUTES, httpPost } from "~/lib/http"
@@ -10,13 +10,6 @@ import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { LoadingSpinner } from "~/components/ui/spinner";
 import { PlusIcon } from "lucide-react";
-
-export async function loader(args: LoaderFunctionArgs) {
-  const { userId, getToken } = await getAuth(args)
-  const token = await getToken()
-  console.log("in create goal loader", userId, token)
-  return null
-}
 
 export async function action(args: ActionFunctionArgs) {
   const formData = await args.request.formData()
