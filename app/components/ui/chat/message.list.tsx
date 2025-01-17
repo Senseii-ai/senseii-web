@@ -1,4 +1,4 @@
-import { ServerMessage } from '~/routes/chat.$'
+import { ServerMessage } from '~/routes/chat.$chatId'
 import { Separator } from '../separator'
 import { BotMessage, UserMessage } from './message'
 

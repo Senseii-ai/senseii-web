@@ -1,20 +1,22 @@
 import { getAuth } from "@clerk/remix/ssr.server";
 import { json, LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { IChat, message } from "@senseii/types";
+import { IChat, serverMessage } from "@senseii/types";
 import { z } from "zod";
 import { ChatList } from "~/components/ui/chat/message.list";
 import PromptForm from "~/components/ui/chat/prompt.form";
 import { httpGet } from "~/lib/http";
+import invariant from "tiny-invariant"
 
 // FIX: Add unique id as well.
-export type ServerMessage = z.infer<typeof message>
+export type ServerMessage = z.infer<typeof serverMessage>
 
 export async function loader(args: LoaderFunctionArgs) {
+  invariant(args.params.chatId, "Expected params.chatId")
   const { getToken } = await getAuth(args)
+  console.log("url", args.params)
   const token = await getToken()
-  const chatId = "GvpCJe6"
-  const chats = await httpGet<IChat>(`chat/${chatId}`, token as string)
+  const chats = await httpGet<IChat>(`chat/${args.params.chatId}`, token as string)
   if (!chats.success) {
     return json({
       error: chats.error,

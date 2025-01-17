@@ -4,8 +4,8 @@ import { Card, CardContent } from "~/components/ui/card";
 import { ComboboxItem } from "~/components/ui/dashboard/combobox";
 import TabComponent from "~/components/ui/dashboard/dashboard-tabs";
 import DashboardNav from "~/components/ui/dashboard/dashboard.nav";
-import CreateGoalModal from "~/components/ui/chat/create.goal";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/remix";
+import CreateGoalModal from "./create-goal";
 
 const goals: ComboboxItem[] = [
   {
