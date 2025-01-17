@@ -68,5 +68,6 @@ export const httpPost = async<T>(url: string, token: string, body: Record<string
 }
 
 export const BE_ROUTES = {
-  createNewGoal: "user/goals/new"
+  createNewGoal: "user/goals/new",
+  getUserGoals: "user/goals"
 }

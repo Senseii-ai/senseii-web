@@ -1,11 +1,15 @@
-import type { MetaFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import { json, redirect, useLoaderData } from "@remix-run/react";
 import { Card, CardContent } from "~/components/ui/card";
 import { ComboboxItem } from "~/components/ui/dashboard/combobox";
 import TabComponent from "~/components/ui/dashboard/dashboard-tabs";
 import DashboardNav from "~/components/ui/dashboard/dashboard.nav";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/remix";
 import CreateGoalModal from "./create-goal";
+import { BE_ROUTES, httpGet } from "~/lib/http";
+import { UserGoals } from "@senseii/types";
+import { getAuth } from "@clerk/remix/ssr.server";
+import { toast } from "~/hooks/use-toast";
 
 const goals: ComboboxItem[] = [
   {
@@ -29,13 +33,26 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export async function loader() {
-  return { goals: [] }
+export async function loader(args: LoaderFunctionArgs) {
+  const { userId, getToken } = await getAuth(args)
+  const token = await getToken()
+  if (!userId || !token) {
+    return redirect('/sign-in?redirect_url=' + '/')
+  }
+  const userGoals = await httpGet<UserGoals[]>(BE_ROUTES.getUserGoals, token)
+  // if not successful, some internal server error
+  if (!userGoals.success) {
+    return json({ error: userGoals.error.message, goals: [] })
+  }
+  return { error: null, goals: userGoals.data }
 }
 
 // NOTE: Handle the section for when user profile is not created.
 export default function Index() {
-  const { goals } = useLoaderData<typeof loader>()
+  const { error, goals } = useLoaderData<typeof loader>()
+  if (error) {
+    toast({ title: error })
+  }
   if (goals.length === 0) {
     return <EmptyDashboard />
   }
