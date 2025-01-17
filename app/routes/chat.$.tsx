@@ -1,26 +1,31 @@
+import { getAuth } from "@clerk/remix/ssr.server";
 import { json, LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { message } from "@senseii/types";
+import { IChat, message } from "@senseii/types";
 import { z } from "zod";
 import { ChatList } from "~/components/ui/chat/message.list";
 import PromptForm from "~/components/ui/chat/prompt.form";
+import { httpGet } from "~/lib/http";
 
 // FIX: Add unique id as well.
 export type ServerMessage = z.infer<typeof message>
 
-export async function loader({ params }: LoaderFunctionArgs) {
-  // user user chats, regarding a goal.
-  const messages: ServerMessage[] = [
-    {
-      role: "user",
-      content: "Hello can you help me?"
-    },
-    {
-      role: "assistant",
-      content: "Sure, why not, what do you need help with?"
-    }
-  ]
-  return json({ messages })
+export async function loader(args: LoaderFunctionArgs) {
+  const { getToken } = await getAuth(args)
+  const token = await getToken()
+  const chatId = "GvpCJe6"
+  const chats = await httpGet<IChat>(`chat/${chatId}`, token as string)
+  if (!chats.success) {
+    return json({
+      error: chats.error,
+      messages: null
+    })
+  }
+
+  return json({
+    error: null,
+    messages: chats.data.messages
+  })
 }
 
 // component handling the chat interaction
@@ -31,12 +36,13 @@ export function action() {
 
 export default function Chat() {
   const { messages } = useLoaderData<typeof loader>()
+
   return (
     <div className="w-full mt-10">
-      {messages.length ? (
+      {messages ? (
         <ChatList messages={messages} />
       ) : (
-        ''
+        ""
       )}
       <div className="fixed inset-x-0 bottom-0 w-full mx-auto max-w-2xl sm:px-4">
         <div className="mx-auto sm:max-w-2xl sm:px-4">
