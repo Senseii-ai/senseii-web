@@ -11,7 +11,7 @@ export function ChatList({ messages }: ChatList) {
     return null
   }
   return (
-    <div className="relative mx-auto max-w-2xl px-4">
+    <div className="relative mx-auto max-w-2xl">
       {/* {!isShared && !session ? ( */}
       {/*   <> */}
       {/*     <div className="group relative mb-4 flex items-start md:-ml-12"> */}
@@ -37,7 +37,7 @@ export function ChatList({ messages }: ChatList) {
       {/* ) : null} */}
 
       {messages.map((message, index) => (
-        <div key={message.content}>
+        <div key={message.id}>
           {message.role === "user" ? <UserMessage>{message.content}</UserMessage> : <BotMessage content={message.content}></BotMessage>}
           {index < messages.length - 1 && <Separator className="my-4" />}
         </div>
