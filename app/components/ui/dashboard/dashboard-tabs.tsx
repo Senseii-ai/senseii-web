@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../tabs";
 import { Button } from "../button";
 import { IconOpenAI } from "../icons/icons";
 import { Link } from "@remix-run/react";
+import CreateGoalModal from "~/routes/create-goal";
 
 interface TabComponentProps {
   chatId: string
@@ -15,6 +16,7 @@ export default function TabComponent({ chatId }: TabComponentProps) {
   return (
     <div className="relative">
       <div className="absolute top-0 right-0">
+        <CreateGoalModal />
         <Link to={`chat/${chatId}`}>
           <Button size={"default"}>
             <IconOpenAI />
