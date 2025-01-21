@@ -74,7 +74,6 @@ const PromptForm = React.memo(
             }
 
             const chunk = decoder.decode(value);
-            console.log("chunk received", chunk, "end");
 
             try {
               const lines = chunk.split("\n");
@@ -85,10 +84,6 @@ const PromptForm = React.memo(
                     const parsed: StreamMessage = JSON.parse(data);
                     if (parsed.type === "content") {
                       realTimeStreamedMessage += parsed.content;
-                      console.log(
-                        "this is being added",
-                        realTimeStreamedMessage
-                      );
                       setStreamedMessage((prev) => prev + parsed.content);
                     }
                   }

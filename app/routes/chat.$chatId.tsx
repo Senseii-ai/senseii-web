@@ -26,14 +26,14 @@ export async function loader(args: LoaderFunctionArgs) {
     return json({
       error: chats.error,
       messages: null,
-      title: null
+      title: null,
     });
   }
 
   return json({
     error: null,
     messages: chats.data.messages,
-    title: chats.data.title
+    title: chats.data.title,
   });
 }
 
@@ -74,13 +74,25 @@ export default function Chat() {
     setStreamedMessage(value);
   }, []);
 
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  React.useLayoutEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  }, [chatMessages, streamedMessage]);
+
   return (
     <div className="w-full mt-20 bg-background">
       <div className="fixed z-10 top-0 w-full h-14 items-center bg-background flex justify-center">
         <h6>{title || "Chat with Senseii"}</h6>
       </div>
       {chatMessages ? (
-        <div className={` ${!streamedMessage && "pb-40"} mx-5`}>
+        <div
+          ref={containerRef}
+          className={` ${
+            !streamedMessage && "pb-40"
+          } mx-5 overflow-auto max-h-[calc(100vh-14rem)]`}
+        >
           <ChatList messages={chatMessages} />
         </div>
       ) : (
