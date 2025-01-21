@@ -54,7 +54,10 @@ export async function loader(args: LoaderFunctionArgs) {
       theme: getTheme(),
       userId: userId,
       getToken: getToken,
-      sessionId: sessionId
+      sessionId: sessionId,
+      ENV: {
+        BACKEND_URL: process.env.BACKEND_URL
+      }
     };
   });
 }
@@ -95,8 +98,16 @@ function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="h-screen bg-background">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(
+              data.ENV
+            )}`,
+          }}
+        />
         <Toaster />
         <div className="min-h-full flex flex-col">{children}</div>
+        <Scripts />
         <ScrollRestoration />
         <Scripts />
       </body>
