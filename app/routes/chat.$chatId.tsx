@@ -1,11 +1,11 @@
 import { getAuth } from "@clerk/remix/ssr.server";
-import { json, LoaderFunctionArgs } from "@remix-run/node";
+import { ActionFunction, json, LoaderFunctionArgs, ActionFunctionArgs, redirect } from "@remix-run/node";
 import { useLoaderData, useParams } from "@remix-run/react";
 import { IChat, serverMessage } from "@senseii/types";
 import { z } from "zod";
 import { ChatList } from "~/components/ui/chat/message.list";
 import PromptForm from "~/components/ui/chat/prompt.form";
-import { httpGet } from "~/lib/http";
+import { BE_ROUTES, httpGet, httpPost } from "~/lib/http";
 import invariant from "tiny-invariant"
 import React from "react";
 import { BotMessage } from "~/components/ui/chat/message";
@@ -33,8 +33,19 @@ export async function loader(args: LoaderFunctionArgs) {
 }
 
 // component handling the chat interaction
-export function action() {
-  console.log("I was called instead")
+export async function action(args: ActionFunctionArgs) {
+  const { getToken } = await getAuth(args)
+  const token = await getToken()
+  const { chatId } = args.params
+  const formData = await args.request.formData()
+  const chats = formData.get("chats")
+  const response = await httpPost<null>(BE_ROUTES.saveChat(chatId as string), token as string, { chats })
+  if (!response.success) {
+    // FIX: maybe this needs to be a toast.
+    console.error("unable to save chat State")
+  }
+  // FIX: maybe I don't need to refresh the page.
+  // return redirect(`chat/${chatId}`)
   return null
 }
 
@@ -45,12 +56,12 @@ export default function Chat() {
   const { chatId } = useParams()
 
   return (
-    <div className="w-full mt-10">
+    <div className="w-full mt-10 bg-background">
       <div className="flex justify-center">
         <h6>Your Goal</h6>
       </div>
       {chatMessages ? (
-        <div className="mb-40">
+        <div className="pb-40">
           <ChatList messages={chatMessages} />
         </div>
       ) : (
