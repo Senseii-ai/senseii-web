@@ -41,9 +41,9 @@ export default function Index() {
     return <EmptyDashboard />
   }
   return (
-    <div className="h-screen bg-background">
+    <div className="h-screen overflow-y-scroll bg-background">
       <SignedIn>
-        <div className="py-5 px-2 w-full">
+        <div className="mt-5 h-screen px-2 w-full">
           <CardContent>
             <GoalDashboard goals={goals} />
           </CardContent>
@@ -90,7 +90,7 @@ export function GoalDashboard({ goals }: { goals: UserGoalItem[] }) {
   })
 
   return (
-    <div className="space-y-5">
+    <div className="h-full flex flex-col gap-y-5">
       <h1 className="text-4xl font-bold">Dashboard</h1>
       <DashboardNav goalSelectorProps={{ comboboxItems: goalSelectors }} />
       <TabComponent chatId={goals[0].chatId} />

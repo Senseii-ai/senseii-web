@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../accordion"
-import { IDailyNutritionPlan, IMacroNutrients, IMeals, IMicroNutrients, Weekday } from "@senseii/types";
+import { DailyNutritionPlan, MacroNutrients, Meals, MicroNutrients, Weekday } from "@senseii/types";
 import {
   Table,
   TableBody,
@@ -17,7 +17,7 @@ import {
 import PlanNotAvailable from "./not.available";
 
 
-export const dailyMealPlan: IDailyNutritionPlan = {
+export const dailyMealPlan: DailyNutritionPlan = {
   day: "Monday",
   meals: [
     {
@@ -111,7 +111,7 @@ interface MealPlanProps {
   isAvailable: boolean
 }
 
-function MealDropdown({ meal, item }: { meal: IDailyNutritionPlan, item: number }) {
+function MealDropdown({ meal, item }: { meal: DailyNutritionPlan, item: number }) {
   return (
     <AccordionItem className={`item-${item}`} value={`item-${item}`}>
       <AccordionTrigger className="text-base">
@@ -128,7 +128,7 @@ function MealDropdown({ meal, item }: { meal: IDailyNutritionPlan, item: number 
   )
 }
 
-function DailyMealCard({ meal, itemKey }: { meal: IMeals, itemKey: number }) {
+function DailyMealCard({ meal, itemKey }: { meal: Meals, itemKey: number }) {
   return (
     <AccordionItem value={`item-${itemKey}`} className="md:mx-4">
       <AccordionTrigger>{meal.type}</AccordionTrigger>
@@ -139,7 +139,7 @@ function DailyMealCard({ meal, itemKey }: { meal: IMeals, itemKey: number }) {
   )
 }
 
-function MealTable({ meal }: { meal: IMeals }) {
+function MealTable({ meal }: { meal: Meals }) {
   return (
     <Table>
       <TableHeader>
@@ -178,7 +178,7 @@ function MealTable({ meal }: { meal: IMeals }) {
   )
 }
 
-function MacrosTable({ items }: { items: IMacroNutrients | IMicroNutrients }) {
+function MacrosTable({ items }: { items: MacroNutrients | MicroNutrients }) {
   const macroArray = Object.entries(items)
   return (
     <>
@@ -195,7 +195,7 @@ function MacrosTable({ items }: { items: IMacroNutrients | IMicroNutrients }) {
 
 export default function DailyMealPlan({ isAvailable }: MealPlanProps) {
   return (
-    <Card className="overflow-y-auto">
+    <Card className="overflow-y-auto h-full">
       <CardHeader>
         <CardTitle >Meal Plan</CardTitle>
       </CardHeader>
