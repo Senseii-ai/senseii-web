@@ -7,9 +7,8 @@ export const httpGet = async<T>(url: string, token: string): Promise<Result<T>> 
   try {
     // FIX: Add a wrapper for missing secret keys.
     // FIX: Add a way to send cookies by default.
-    const fetchUrl = `${BE_URL}/${url}`
     infoLogger({ message: `METHOD: GET URL: ${url}`, status: "alert", layer: "API", name: "HTTP" })
-    const response = await fetch(fetchUrl, {
+    const response = await fetch(url, {
       method: 'GET',
       credentials: "include",
       headers: {
