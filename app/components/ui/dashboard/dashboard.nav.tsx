@@ -7,11 +7,6 @@ interface DashboardNavProps {
   goalSelectorProps: GoalSelectorProps
 }
 
-// const navItems = [
-//   "Overview",
-//   "Plans",
-// ]
-
 export default function DashboardNav({ goalSelectorProps: { user, comboboxItems } }: DashboardNavProps) {
   const [selected, setSelected] = React.useState(0)
 
@@ -21,7 +16,7 @@ export default function DashboardNav({ goalSelectorProps: { user, comboboxItems 
 
 
   return (
-    <div className="flex items-center justify-center gap-x-5 border-b pb-5">
+    <div className="flex md:justify-start items-center justify-center gap-x-5 border-b pb-5">
       <GoalSelector user={user} comboboxItems={comboboxItems} />
       <nav className="md:space-x-5 space-x-2">
         <Link

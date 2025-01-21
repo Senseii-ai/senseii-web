@@ -64,7 +64,7 @@ export function EmptyDashboard() {
     <div className="flex flex-col mx-20 h-screen items-center justify-center">
       <div className="h-1/3 flex flex-col justify-between items-center max-w-80">
         <h2>You have no goals defined yet, please add one to get started</h2>
-        <CreateGoalModal />
+        <CreateGoalModal variant="default" />
         <p className="text-sm text-muted-foreground text-center">Click the plus icon to start defining your goal.</p>
       </div>
     </div>

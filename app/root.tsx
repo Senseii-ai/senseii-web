@@ -94,7 +94,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
         <Links />
       </head>
-      <body className="h-screen">
+      <body className="h-screen bg-background">
         <Toaster />
         <div className="min-h-full flex flex-col">{children}</div>
         <ScrollRestoration />
