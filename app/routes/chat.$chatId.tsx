@@ -26,12 +26,14 @@ export async function loader(args: LoaderFunctionArgs) {
     return json({
       error: chats.error,
       messages: null,
+      title: null
     });
   }
 
   return json({
     error: null,
     messages: chats.data.messages,
+    title: chats.data.title
   });
 }
 
@@ -57,7 +59,7 @@ export async function action(args: ActionFunctionArgs) {
 }
 
 export default function Chat() {
-  const { messages } = useLoaderData<typeof loader>();
+  const { messages, title } = useLoaderData<typeof loader>();
   const [chatMessages, setChatMessages] = React.useState<ServerMessage[]>(
     messages || []
   );
@@ -73,9 +75,9 @@ export default function Chat() {
   }, []);
 
   return (
-    <div className="w-full mt-10 bg-background">
-      <div className="flex justify-center">
-        <h6>Your Goal</h6>
+    <div className="w-full mt-20 bg-background">
+      <div className="fixed z-10 top-0 w-full h-14 items-center bg-background flex justify-center">
+        <h6>{title || "Chat with Senseii"}</h6>
       </div>
       {chatMessages ? (
         <div className={` ${!streamedMessage && "pb-40"} mx-5`}>
