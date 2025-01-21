@@ -6,12 +6,21 @@ import DashboardCardWrapper from "./dashboard.wrapper";
 export default function Macros() {
   return (
     <DashboardCardWrapper showFooter={false} showAddButton={false} icon={<GoPlusCircle />} headerTitle={"Macros"} footerText={"movement so far"}>
-      <div className="flex h-32 justify-between items-center md:gap-x-4 w-full gap-x-2">
-        <ProgressItem title="Protein" value={48} goal={20000} />
-        <Separator orientation="vertical" />
-        <ProgressItem title="Protein" value={48} goal={20000} />
-        <Separator orientation="vertical" />
-        <ProgressItem title="Carbs" value={48} goal={20000} />
+      <div className="flex h-32 items-center w-full">
+        <div className="h-full flex w-full md:pl-5">
+          <ProgressItem title="Protein" value={48} goal={20000} />
+          {/* <Separator orientation="vertical" /> */}
+        </div>
+
+        <div className="h-full flex w-full">
+          <Separator orientation="vertical" className="mr-5" />
+          <ProgressItem title="Protein" value={48} goal={20000} />
+        </div>
+
+        <div className="flex h-full w-full">
+          <Separator orientation="vertical" className="mr-5" />
+          <ProgressItem title="Carbs" value={48} goal={20000} />
+        </div>
       </div>
     </DashboardCardWrapper>
   )
