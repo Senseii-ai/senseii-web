@@ -66,11 +66,11 @@ export default function Chat() {
   );
   const { chatId } = useParams();
 
-  const memoizedSetStreamedMessage = useCallback((message: string | null) => {
-    setStreamedMessage(message);
+  const memoizedSetStreamedMessage: React.Dispatch<
+    React.SetStateAction<string | null>
+  > = useCallback((value) => {
+    setStreamedMessage(value);
   }, []);
-
-  console.log("Chat component re-rendered");
 
   return (
     <div className="w-full mt-10 bg-background">
@@ -78,7 +78,7 @@ export default function Chat() {
         <h6>Your Goal</h6>
       </div>
       {chatMessages ? (
-        <div className={` ${!streamedMessage && "pb-40"}`}>
+        <div className={` ${!streamedMessage && "pb-40"} mx-5`}>
           <ChatList messages={chatMessages} />
         </div>
       ) : (

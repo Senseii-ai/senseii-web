@@ -25,8 +25,6 @@ const PromptForm = React.memo(
     const { getToken } = useAuth();
     const submit = useSubmit();
 
-    console.log("prompt form re-rendered");
-
     const handleSubmit = useCallback(
       async (e: FormEvent<HTMLElement>) => {
         e.preventDefault();
