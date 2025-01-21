@@ -59,7 +59,8 @@ export default function TabComponent({ chatId }: TabComponentProps) {
               <Meals available={true} />
             </div>
           </div>
-          <div className="">
+          <div className="h-full">
+            {/* Daily meal Plan */}
             <DailyMealPlan isAvailable={true} />
           </div>
         </TabsContent>
