@@ -1,7 +1,7 @@
 import { AppError, Result } from "@senseii/types";
 import { infoLogger } from "./logger";
 
-const BE_URL = import.meta.env.BACKEND_URL || process.env.BACKEND_URL || "http://localhost:9090"
+const BE_URL = process.env.BACKEND_URL || "http://localhost:9090"
 
 export const httpGet = async<T>(url: string, token: string): Promise<Result<T>> => {
   try {
@@ -23,7 +23,6 @@ export const httpGet = async<T>(url: string, token: string): Promise<Result<T>> 
       throw data
     }
     const finalResponse = await response.json()
-    console.log("OK RESPONSE", finalResponse.data)
     return {
       success: true,
       data: finalResponse.data
