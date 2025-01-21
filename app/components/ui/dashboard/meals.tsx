@@ -1,6 +1,5 @@
 import { GoPlusCircle } from "react-icons/go";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../carousel";
-import { Card, CardContent } from "../card";
 import DashboardCardWrapper from "./dashboard.wrapper";
 import Macros from "./macros";
 
@@ -10,41 +9,33 @@ interface MealsProps {
 
 function MealsNotAvailable() {
   return (
-    <div className="flex justify-center">press + to enter manually or install our App</div>
+    <div className="flex justify-center items-center h-full">press + to enter manually or install our App</div>
   )
 }
 
 export default function Meals({ available }: MealsProps) {
   return (
-    <div>
-      <DashboardCardWrapper showFooter={true} showAddButton={true} icon={<GoPlusCircle />} headerTitle={"Nutrition"} footerText={"movement so far"}>
-        {available ? <div className="md:flex hidden gap-x-2">
-          <Macros />
-          <Macros />
-          {/* TODO: Add section for Micros */}
+    <DashboardCardWrapper showFooter={true} showAddButton={true} icon={<GoPlusCircle />} headerTitle={"Nutrition"} footerText={"movement so far"}>
+      {available ?
+        <div className="w-10/12 mx-auto">
+          <Carousel
+            opts={{
+              align: "start",
+            }}
+            className="w-full md:w-full xs:max-w-[300px] mx-auto"
+          >
+            <CarouselContent className="">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <CarouselItem key={index} className="xl:basis-1/2">
+                  <Macros />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
-          : <MealsNotAvailable />}
-        <Carousel
-          opts={{
-            align: "start",
-          }}
-          className="w-full max-w-[240px] mx-auto md:hidden"
-        >
-          <CarouselContent>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 basis-full">
-                <Card>
-                  <CardContent className="flex aspect-square items-center justify-center p-6">
-                    <span className="text-3xl font-semibold">{index + 1}</span>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-      </DashboardCardWrapper>
-    </div>
+        : <MealsNotAvailable />}
+    </DashboardCardWrapper>
   )
 }

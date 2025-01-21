@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect, useLoaderData } from "@remix-run/react";
-import { Card, CardContent } from "~/components/ui/card";
+import { CardContent } from "~/components/ui/card";
 import { ComboboxItem } from "~/components/ui/dashboard/combobox";
 import TabComponent from "~/components/ui/dashboard/dashboard-tabs";
 import DashboardNav from "~/components/ui/dashboard/dashboard.nav";
@@ -41,13 +41,13 @@ export default function Index() {
     return <EmptyDashboard />
   }
   return (
-    <div className="h-screen">
+    <div className="h-screen overflow-y-scroll bg-background">
       <SignedIn>
-        <Card className="py-5 px-2 w-full">
+        <div className="mt-5 h-screen px-2 w-full">
           <CardContent>
             <GoalDashboard goals={goals} />
           </CardContent>
-        </Card>
+        </div>
       </SignedIn>
       <SignedOut>
         <h1>You are Signed Out</h1>
@@ -90,7 +90,7 @@ export function GoalDashboard({ goals }: { goals: UserGoalItem[] }) {
   })
 
   return (
-    <div className="space-y-5">
+    <div className="h-full flex flex-col gap-y-5">
       <h1 className="text-4xl font-bold">Dashboard</h1>
       <DashboardNav goalSelectorProps={{ comboboxItems: goalSelectors }} />
       <TabComponent chatId={goals[0].chatId} />

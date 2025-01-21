@@ -81,7 +81,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   const data = useLoaderData<typeof loader>();
   const [theme] = useTheme();
   return (
-    <html lang="en" className={clsx(theme, "h-full")}>
+    <html lang="en" className={clsx(theme, "h-screen")}>
       <head>
         <ManifestLink manifestUrl="/manifest.webmanifest" />
         <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
@@ -97,7 +97,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
         <Links />
       </head>
-      <body className="h-screen bg-background">
+      <body className="h-full bg-background">
         <script
           dangerouslySetInnerHTML={{
             __html: `window.ENV = ${JSON.stringify(
@@ -106,7 +106,7 @@ function Layout({ children }: { children: React.ReactNode }) {
           }}
         />
         <Toaster />
-        <div className="min-h-full flex flex-col">{children}</div>
+        <div className="bg-background h-full flex flex-col">{children}</div>
         <Scripts />
         <ScrollRestoration />
         <Scripts />
