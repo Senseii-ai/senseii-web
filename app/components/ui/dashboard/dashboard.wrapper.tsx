@@ -13,20 +13,19 @@ interface DashboardCardWrapperProps {
 }
 export default function DashboardCardWrapper({ showFooter, showAddButton, headerTitle, children, footerText, icon }: DashboardCardWrapperProps) {
   return (
-    <Card className="w-full h-full md:max-h-20 flex flex-col justify-between">
-      <CardHeader>
+    <Card className="w-full h-full flex flex-col justify-between">
+      <CardHeader className="">
         <div className="flex justify-between">
           <h3 className="text-base font-semibold">{headerTitle}</h3>
           {showAddButton ? <button onClick={() => toast({ description: "implement chat modal" })} className="text-3xl cursor-pointer font-light">{icon}</button> : ""}
-
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="h-full">
         {children}
       </CardContent>
       {showFooter &&
         <CardFooter>
-          <p>{footerText}</p>
+          <p className="text-sm text-muted-foreground">{footerText}</p>
         </CardFooter>}
     </Card >
   )
