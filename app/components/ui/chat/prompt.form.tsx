@@ -7,9 +7,7 @@ import React, { Dispatch, SetStateAction } from "react"
 import { Form, useSubmit } from "@remix-run/react"
 import { ServerMessage } from "~/routes/chat.$chatId"
 import { useAuth } from "@clerk/remix"
-import { BE_ROUTES } from "~/lib/http"
 import { StreamMessage } from "@senseii/types"
-import { infoLogger } from "~/lib/logger"
 import { nanoid } from "nanoid"
 
 interface PromptFormProps {
@@ -41,8 +39,9 @@ export default function PromptForm({ setChatMessages, setStreamedMessage, chatId
 
 
       setChatMessages((prev) => [...prev, { role: "user", id: nanoid(), content: input }])
+      const streamChatURL = `${window.ENV.BACKEND_URL}/chat`
 
-      const response = await fetch(BE_ROUTES.streamChat, {
+      const response = await fetch(streamChatURL, {
         method: "POST",
         body: JSON.stringify({ content: value, chatId: chatId }),
         headers: {
@@ -56,11 +55,10 @@ export default function PromptForm({ setChatMessages, setStreamedMessage, chatId
       let realTimeStreamedMessage = ""
 
       if (response.ok) {
-        console.log("ok response")
         const reader = response?.body?.getReader()
 
         if (!reader) {
-          console.log("internal server error")
+          console.error("internal server error")
           return
         }
 
@@ -69,28 +67,27 @@ export default function PromptForm({ setChatMessages, setStreamedMessage, chatId
         while (true) {
           const { done, value } = await reader.read()
           if (done) {
-            infoLogger({ message: "DONE", status: "success" })
             break
           }
 
           const chunk = decoder.decode(value)
-          console.log("chunk received", chunk, "end")
+          // console.log("chunk received", chunk, "end")
 
           try {
             const lines = chunk.split("\n")
-            console.log("lines in chunk", lines, "end")
+            // console.log("lines in chunk", lines, "end")
             // let data = ""
             lines.forEach((line) => {
               if (line.startsWith("data")) {
 
-                console.log("line is", line, "end")
+                // console.log("line is", line, "end")
                 const data = line.replace("data: ", "").trim()
 
-                console.log("just before parsing", data, "end")
+                // console.log("just before parsing", data, "end")
                 if (data) {
                   const parsed: StreamMessage = JSON.parse(data)
 
-                  console.log("PARSED DATA", parsed)
+                  // console.log("PARSED DATA", parsed)
                   if (parsed.type === "content") {
                     realTimeStreamedMessage += parsed.content
                     setStreamedMessage((prev) => prev + parsed.content)
@@ -109,10 +106,23 @@ export default function PromptForm({ setChatMessages, setStreamedMessage, chatId
         ])
         setStreamedMessage(null)
 
+        const chats: ServerMessage[] = [
+          {
+            id: nanoid(),
+            role: "user",
+            content: value
+          },
+          {
+            id: nanoid(),
+            role: "assistant",
+            content: realTimeStreamedMessage
+          }
+        ]
+
         // FIX: save the messages in the database.
+        submit({ chats: JSON.stringify({ chats: chats }) }, { method: "post" })
       }
       // Use Remix's useSubmit to programmatically submit the form
-      submit(e.currentTarget)
     }
     }>
       <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden pr-20 sm:rounded-md sm:border sm:pl-0">

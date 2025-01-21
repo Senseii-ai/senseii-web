@@ -42,14 +42,18 @@ export async function action(args: ActionFunctionArgs) {
   return redirect(`/chat/${response.data}`)
 }
 
-export default function CreateGoalModal() {
+interface CreateGoalModalProps {
+  variant: string
+}
+
+export default function CreateGoalModal({ variant = "default" }: CreateGoalModalProps) {
   const navigation = useNavigation()
   const isSubmitting = navigation.formAction === "/create-goal"
 
   return (
     <Dialog >
       <DialogTrigger className="w-full">
-        <Button className="w-full max-w-24"><PlusIcon /> </Button>
+        <Button variant={variant} className="w-full max-w-24"><PlusIcon /> </Button>
       </DialogTrigger>
       <DialogContent className="w-11/12">
         <DialogHeader>
