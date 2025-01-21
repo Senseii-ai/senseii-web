@@ -67,6 +67,7 @@ export const httpPost = async<T>(url: string, token: string, body: Record<string
 }
 
 export const BE_ROUTES = {
+  getChats: (chatId: string) => `${BE_URL}/chat/${chatId}`,
   createNewGoal: `${BE_URL}/user/goals/new`,
   getUserGoals: `${BE_URL}/user/goals`,
   saveChat: (chatId: string) => { return (`${BE_URL}/chat/${chatId}/save`) }

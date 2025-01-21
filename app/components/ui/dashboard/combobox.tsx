@@ -17,7 +17,7 @@ interface ComboboxProps {
 
 export default function Combobox({ contentList }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
-  const [value] = React.useState("")
+  const [value] = React.useState<string>(contentList[0].value)
   return (
     <Popover>
       <PopoverTrigger>
