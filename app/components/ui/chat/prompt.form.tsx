@@ -8,17 +8,18 @@ import { Textarea } from "../textarea";
 import { IconArrowElbow } from "../icons/icons";
 import { useEnterSubmit } from "~/hooks/use-enter-submit";
 import { ServerMessage } from "~/routes/chat.$chatId";
-import { StreamMessage } from "@senseii/types";
+import { StateChangeMessage, StreamMessage } from "@senseii/types";
 
 interface PromptFormProps {
   chatMessages: ServerMessage[];
   setChatMessages: Dispatch<SetStateAction<ServerMessage[]>>;
   setStreamedMessage: Dispatch<SetStateAction<string | null>>;
   chatId: string;
+  setAIState: Dispatch<SetStateAction<string>>
 }
 
 const PromptForm = React.memo(
-  ({ setChatMessages, setStreamedMessage, chatId }: PromptFormProps) => {
+  ({ setChatMessages, setStreamedMessage, chatId, setAIState }: PromptFormProps) => {
     const { formRef, onKeyDown } = useEnterSubmit();
     const [input, setInput] = React.useState("");
     const inputRef = React.useRef<HTMLTextAreaElement>(null);
@@ -56,6 +57,7 @@ const PromptForm = React.memo(
         });
 
         let realTimeStreamedMessage = "";
+        let realTimeState = ""
 
         if (response.ok) {
           const reader = response?.body?.getReader();
@@ -80,12 +82,21 @@ const PromptForm = React.memo(
               lines.forEach((line) => {
                 if (line.startsWith("data")) {
                   const data = line.replace("data: ", "").trim();
+                  console.log('data', data)
                   if (data) {
                     const parsed: StreamMessage = JSON.parse(data);
                     if (parsed.type === "content") {
                       realTimeStreamedMessage += parsed.content;
                       setStreamedMessage((prev) => prev + parsed.content);
                     }
+                  }
+                } else if (line.startsWith("event")) {
+                  const data = line.replace("event: ", "").trim()
+                  if (data) {
+                    const parsed: StateChangeMessage = JSON.parse(data)
+                    realTimeState = parsed.content
+                    console.log(realTimeState)
+                    setAIState(realTimeState)
                   }
                 }
               });

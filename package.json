@@ -31,7 +31,7 @@
     "@remix-run/node": "^2.15.2",
     "@remix-run/react": "^2.15.2",
     "@remix-run/serve": "^2.15.2",
-    "@senseii/types": "^1.2.47",
+    "@senseii/types": "^1.2.49",
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

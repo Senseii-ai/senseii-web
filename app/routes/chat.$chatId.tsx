@@ -7,9 +7,13 @@ import { ChatList } from "~/components/ui/chat/message.list";
 import PromptForm from "~/components/ui/chat/prompt.form";
 import { BE_ROUTES, httpGet, httpPost } from "~/lib/http";
 import invariant from "tiny-invariant";
-import React, { useCallback } from "react";
+import React from "react";
 import { BotMessage } from "~/components/ui/chat/message";
 import { Separator } from "@radix-ui/react-dropdown-menu";
+import { useScrollAnchor } from "~/hooks/use-scroll-anchor";
+import { Button } from "~/components/ui/button";
+import { IoIosArrowRoundDown } from "react-icons/io";
+import { LoadingSpinner } from "~/components/ui/spinner";
 
 // FIX: Add unique id as well.
 export type ServerMessage = z.infer<typeof serverMessage>;
@@ -66,56 +70,67 @@ export default function Chat() {
   const [streamedMessage, setStreamedMessage] = React.useState<string | null>(
     null
   );
+  const [aiState, setAIState] = React.useState("thinking")
   const { chatId } = useParams();
 
-  const memoizedSetStreamedMessage: React.Dispatch<
-    React.SetStateAction<string | null>
-  > = useCallback((value) => {
-    setStreamedMessage(value);
-  }, []);
-
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  React.useLayoutEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
-  }, [chatMessages, streamedMessage]);
-
+  const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } = useScrollAnchor()
   return (
     <div className="w-full mt-20 bg-background">
       <div className="fixed z-10 top-0 w-full h-14 items-center bg-background flex justify-center">
         <h6>{title || "Chat with Senseii"}</h6>
       </div>
-      {chatMessages ? (
-        <div
-          ref={containerRef}
-          className={` ${
-            !streamedMessage && "pb-40"
-          } mx-5 overflow-auto max-h-[calc(100vh-14rem)]`}
-        >
-          <ChatList messages={chatMessages} />
-        </div>
-      ) : (
-        ""
-      )}
-      {streamedMessage && (
-        <div className="relative mx-auto max-w-2xl">
-          <Separator className="my-4" />
-          <BotMessage className="max-w-2xl" content={streamedMessage} />
-        </div>
-      )}
+      <div ref={scrollRef} className="overflow-auto max-h-[calc(100vh-10rem)]">
+        {chatMessages ? (
+          <div
+            ref={messagesRef}
+            className={` ${!streamedMessage && "md:pb-40 pb-20"
+              } mx-5 overflow-auto `}
+          >
+            <ChatList messages={chatMessages} />
+          </div>
+        ) : (
+          ""
+        )}
+        {streamedMessage && (
+          <div className="relative mx-auto max-w-2xl">
+            <Separator className="my-4" />
+            <div className="flex gap-x-2">
+              <LoadingSpinner />
+              <p className="text-sm text-muted-foreground">
+                {aiState}
+              </p>
+            </div>
+            <BotMessage className="max-w-2xl" content={streamedMessage} />
+          </div>
+        )}
+        <div className="mt-5" ref={visibilityRef} />
+      </div>
+
       <div className="fixed inset-x-0 bottom-0 w-full mx-auto max-w-2xl sm:px-4">
         <div className="mx-auto sm:max-w-2xl sm:px-4">
           <div className="space-y-4 border-t bg-background px-4 py-3 shadow-lg sm:rounded-t-xl sm:border md:py-4">
             <PromptForm
               chatMessages={chatMessages}
               setChatMessages={setChatMessages}
-              setStreamedMessage={memoizedSetStreamedMessage}
+              setStreamedMessage={setStreamedMessage}
               chatId={chatId as string}
+              setAIState={setAIState}
             />
           </div>
         </div>
       </div>
+
+      {/* Scroll to Bottom Button */}
+      {!isAtBottom && (
+        <Button
+          size={"icon"}
+          variant={"outline"}
+          className="fixed bottom-24 right-4 shadow-lg"
+          onClick={scrollToBottom}
+        >
+          <IoIosArrowRoundDown />
+        </Button>
+      )}
     </div>
   );
 }
