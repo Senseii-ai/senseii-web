@@ -80,29 +80,30 @@ export default function Chat() {
         <h6>{title || "Chat with Senseii"}</h6>
       </div>
       <div ref={scrollRef} className="overflow-auto max-h-[calc(100vh-10rem)]">
-        {chatMessages ? (
-          <div
-            ref={messagesRef}
-            className={` ${!streamedMessage && "md:pb-40 pb-20"
-              } mx-5 overflow-auto `}
-          >
-            <ChatList messages={chatMessages} />
-          </div>
-        ) : (
-          ""
-        )}
-        {streamedMessage && (
-          <div className="relative mx-auto max-w-2xl">
-            <Separator className="my-4" />
-            <div className="flex gap-x-2">
-              <LoadingSpinner />
-              <p className="text-sm text-muted-foreground">
-                {aiState}
-              </p>
+        <div ref={messagesRef}>
+          {chatMessages ? (
+            <div
+              className={` ${!streamedMessage && "md:pb-40 pb-20"
+                } mx-5 overflow-auto `}
+            >
+              <ChatList messages={chatMessages} />
             </div>
-            <BotMessage className="max-w-2xl" content={streamedMessage} />
-          </div>
-        )}
+          ) : (
+            null
+          )}
+          {streamedMessage && (
+            <div className="relative mx-auto max-w-2xl">
+              <Separator className="my-4" />
+              <div className="flex gap-x-2">
+                <LoadingSpinner />
+                <p className="text-sm">
+                  {aiState}
+                </p>
+              </div>
+              <BotMessage className="max-w-2xl" content={streamedMessage} />
+            </div>
+          )}
+        </div>
         <div className="mt-5" ref={visibilityRef} />
       </div>
 
