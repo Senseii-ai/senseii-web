@@ -118,7 +118,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <div className="h-full">
-      <div className="absolute top-5 right-5">
+      <div className="absolute top-5 z-20 right-5">
         <ModeToggle />
       </div>
       <Outlet />
