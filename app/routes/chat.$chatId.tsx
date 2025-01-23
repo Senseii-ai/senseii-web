@@ -8,12 +8,11 @@ import PromptForm from "~/components/ui/chat/prompt.form";
 import { BE_ROUTES, httpGet, httpPost } from "~/lib/http";
 import invariant from "tiny-invariant";
 import React from "react";
-import { BotMessage } from "~/components/ui/chat/message";
-import { Separator } from "@radix-ui/react-dropdown-menu";
+import { StreamingBotMessage } from "~/components/ui/chat/message";
 import { useScrollAnchor } from "~/hooks/use-scroll-anchor";
 import { Button } from "~/components/ui/button";
 import { IoIosArrowRoundDown } from "react-icons/io";
-import { LoadingSpinner } from "~/components/ui/spinner";
+import { Separator } from "~/components/ui/separator";
 
 // FIX: Add unique id as well.
 export type ServerMessage = z.infer<typeof serverMessage>;
@@ -70,13 +69,14 @@ export default function Chat() {
   const [streamedMessage, setStreamedMessage] = React.useState<string | null>(
     null
   );
+
   const [aiState, setAIState] = React.useState("thinking")
   const { chatId } = useParams();
 
   const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } = useScrollAnchor()
   return (
-    <div className="w-full mt-20 bg-background">
-      <div className="fixed z-10 top-0 w-full h-14 items-center bg-background flex justify-center">
+    <div className="w-full md:mt-20 mt-12 bg-background">
+      <div className="fixed z-10 top-0 w-full md:h-14 h-10 items-center bg-background flex justify-center">
         <h6>{title || "Chat with Senseii"}</h6>
       </div>
       <div ref={scrollRef} className="overflow-auto max-h-[calc(100vh-10rem)]">
@@ -94,15 +94,10 @@ export default function Chat() {
           {streamedMessage && (
             <div className="relative mx-auto max-w-2xl">
               <Separator className="my-4" />
-              <div className="flex gap-x-2">
-                <LoadingSpinner />
-                <p className="text-sm">
-                  {aiState}
-                </p>
-              </div>
-              <BotMessage className="max-w-2xl" content={streamedMessage} />
+              <StreamingBotMessage className="max-w-2xl" aiState={aiState} content={streamedMessage} />
             </div>
           )}
+
         </div>
         <div className="mt-5" ref={visibilityRef} />
       </div>

@@ -82,7 +82,6 @@ const PromptForm = React.memo(
               lines.forEach((line) => {
                 if (line.startsWith("data")) {
                   const data = line.replace("data: ", "").trim();
-                  console.log('data', data)
                   if (data) {
                     const parsed: StreamMessage = JSON.parse(data);
                     if (parsed.type === "content") {
@@ -95,7 +94,6 @@ const PromptForm = React.memo(
                   if (data) {
                     const parsed: StateChangeMessage = JSON.parse(data)
                     realTimeState = parsed.content
-                    console.log(realTimeState)
                     setAIState(realTimeState)
                   }
                 }
@@ -134,7 +132,7 @@ const PromptForm = React.memo(
           );
         }
       },
-      [input, setChatMessages, setStreamedMessage, chatId, getToken, submit]
+      [input, setChatMessages, setStreamedMessage, chatId, getToken, submit, setAIState]
     );
 
     return (

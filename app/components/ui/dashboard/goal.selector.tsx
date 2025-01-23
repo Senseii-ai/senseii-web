@@ -7,7 +7,6 @@ export interface GoalSelectorProps {
 }
 
 export default function GoalSelector({ comboboxItems }: GoalSelectorProps) {
-  console.log("combobox Items", comboboxItems)
   return (
     <Combobox title="Select goal" contentList={comboboxItems} />
   )
