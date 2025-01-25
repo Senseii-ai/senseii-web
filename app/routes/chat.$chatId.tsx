@@ -70,7 +70,7 @@ export default function Chat() {
     null
   );
 
-  const [aiState, setAIState] = React.useState("thinking")
+  const [aiState, setAIState] = React.useState("thinking...")
   const { chatId } = useParams();
 
   const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } = useScrollAnchor()
@@ -112,6 +112,9 @@ export default function Chat() {
               chatId={chatId as string}
               setAIState={setAIState}
             />
+          </div>
+          <div className="w-full flex items-center justify-center h-[16px] py-4">
+            <p className="text-sm text-muted-foreground">Senseii can make mistakes, check important info</p>
           </div>
         </div>
       </div>

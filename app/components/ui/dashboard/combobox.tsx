@@ -29,15 +29,6 @@ export default function Combobox({ contentList }: ComboboxProps) {
           className="md:w-48 justify-between"
           onClick={() => setOpen(!open)}
         >
-          <Avatar className="mr-2 h-5 w-5">
-            <AvatarImage
-              src={""}
-              alt={"test"}
-              className="grayscale"
-            />
-            <AvatarFallback>SC</AvatarFallback>
-          </Avatar>
-
           {value
             ? contentList.find((framework) => framework.value === value)?.label
             : "Select goal ..."}
