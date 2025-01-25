@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../tabs";
 import { Button } from "../button";
 import { IconOpenAI } from "../icons/icons";
 import { Link } from "@remix-run/react";
-import CreateGoalModal from "~/routes/create-goal";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip";
 
 interface TabComponentProps {
@@ -17,15 +16,6 @@ export default function TabComponent({ chatId }: TabComponentProps) {
   return (
     <div className="relative h-full">
       <div className="absolute top-0 flex gap-x-2 right-0">
-        <Tooltip>
-          <TooltipTrigger>
-            <CreateGoalModal variant="outline" />
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>click to create a new goal</p>
-          </TooltipContent>
-        </Tooltip>
-
         <Tooltip>
           <TooltipTrigger>
             <Link to={`chat/${chatId}`}>
