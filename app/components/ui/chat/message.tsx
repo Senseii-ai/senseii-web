@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import React from "react";
 import { LoadingSpinner } from "../spinner";
+import { Separator } from "../separator";
 
 export function UserMessage({ children }: { children: React.ReactNode }) {
   return (
@@ -62,6 +63,10 @@ export const StreamingBotMessage = ({
   );
 }
 
+/**
+ * BotMessage returns a Bot Message component.
+ * content {string}
+*/
 
 export function BotMessage({
   content,
@@ -82,6 +87,14 @@ export function BotMessage({
           components={{
             p({ children }) {
               return <p className="mb-2 last:mb-0">{children}</p>;
+            },
+            table({ children }) {
+              return (
+                <div className="overflow-x-scroll w-full max-w-full my-2">
+                  <table>{children}</table>
+                  <Separator />
+                </div>
+              )
             },
           }}
         >
