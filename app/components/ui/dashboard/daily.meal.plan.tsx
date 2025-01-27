@@ -194,7 +194,6 @@ function MacrosTable({ items }: { items: MacroNutrients | MicroNutrients }) {
 }
 
 export default function DailyMealPlan({ isAvailable, plans }: MealPlanProps) {
-  console.log("plans here", plans)
   return (
     <Card className="overflow-y-auto h-full">
       <CardHeader>

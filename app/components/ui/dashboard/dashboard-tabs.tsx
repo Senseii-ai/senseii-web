@@ -59,7 +59,7 @@ export default function TabComponent({ chatId, goals }: TabComponentProps) {
 
         {/* Overview of the Goal */}
         <TabsContent value="overview" className="h-full">
-          <Overview description={goals[0].description} progress={0} />
+          <Overview plans={goals[0].nutritionPlan} description={goals[0].description} progress={0} />
         </TabsContent>
       </Tabs>
     </div>

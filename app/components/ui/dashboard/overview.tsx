@@ -4,13 +4,15 @@ import { GoalProgress } from "./goal.progress";
 import { CurveChart } from "./line-chart";
 import { LinearChart } from "./double.linearchart";
 import MealPlan from "./meal.plan";
+import { NutritionPlan } from "@senseii/types";
 
 interface OverviewProps {
   description: string
   progress: number
+  plans: NutritionPlan | null
 }
 
-export default function Overview({ description, progress }: OverviewProps) {
+export default function Overview({ description, progress, plans }: OverviewProps) {
   return (
     <div className="space-y-2">
       <h1 className="text-xl font-semibold">Goal Name</h1>
@@ -43,7 +45,7 @@ export default function Overview({ description, progress }: OverviewProps) {
         </div>
       </div>
 
-      <MealPlan isAvailable={true} />
+      <MealPlan isAvailable={true} plans={plans} />
       {/* TODO: Add workout plans here */}
       {/* <WorkoutPlan title="Workout Plan" isAvailable={true} /> */}
     </div >
