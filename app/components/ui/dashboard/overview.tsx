@@ -5,7 +5,12 @@ import { CurveChart } from "./line-chart";
 import { LinearChart } from "./double.linearchart";
 import MealPlan from "./meal.plan";
 
-export default function Overview() {
+interface OverviewProps {
+  description: string
+  progress: number
+}
+
+export default function Overview({ description, progress }: OverviewProps) {
   return (
     <div className="space-y-2">
       <h1 className="text-xl font-semibold">Goal Name</h1>
@@ -20,12 +25,12 @@ export default function Overview() {
           <CardContent>
             <Separator className="my-4" />
             <p className="col-span-3">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent quis posuere ipsum, quis tempor lacus. Nulla ac quam tempus, feugiat quam eget, viverra nisl. Donec malesuada risus et molestie venenatis. Vestibulum quis dui felis. Integer diam nisl, vestibulum vel quam ac, dapibus malesuada erat. Vivamus pretium sem quis arcu vulputate, a blandit purus aliquam. Etiam mattis scelerisque enim sit amet tempus. Mauris at bibendum nisl.
+              {description}
             </p>
           </CardContent>
         </Card>
         <div className="lg:col-span-1 col-span-2 h-full">
-          <GoalProgress showFooter={false} />
+          <GoalProgress showFooter={false} progress={progress} />
         </div>
       </div>
 
