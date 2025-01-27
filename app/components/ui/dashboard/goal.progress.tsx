@@ -1,11 +1,11 @@
-import { TrendingUp } from "lucide-react"
+import { TrendingUp } from "lucide-react";
 import {
   Label,
   PolarGrid,
   PolarRadiusAxis,
   RadialBar,
   RadialBarChart,
-} from "recharts"
+} from "recharts";
 
 import {
   Card,
@@ -14,27 +14,28 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../card"
-import { ChartConfig, ChartContainer } from "../chart"
-const chartData = [
-  { browser: "safari", visitors: 1260, fill: "var(--color-safari)" },
-]
-
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  safari: {
-    label: "Safari",
-    color: "hsl(var(--chart-2))",
-  },
-} satisfies ChartConfig
+} from "../card";
+import { ChartConfig, ChartContainer } from "../chart";
 
 interface GoalProgressProps {
-  showFooter: boolean
+  showFooter: boolean;
+  progress: number;
 }
 
-export function GoalProgress({ showFooter }: GoalProgressProps) {
+export function GoalProgress({ showFooter, progress }: GoalProgressProps) {
+  const chartConfig = {
+    visitors: {
+      label: "Visitors",
+    },
+    safari: {
+      label: "Safari",
+      color: "hsl(var(--chart-2))",
+    },
+  } satisfies ChartConfig;
+
+  const chartData = [
+    { browser: "safari", visitors: progress, fill: "var(--color-safari)" },
+  ];
   return (
     <Card className="flex h-full flex-col">
       <CardHeader className="items-center pb-0">
@@ -49,7 +50,7 @@ export function GoalProgress({ showFooter }: GoalProgressProps) {
           >
             <RadialBarChart
               data={chartData}
-              endAngle={100}
+              endAngle={(progress / 100) * 360}
               innerRadius={80}
               outerRadius={140}
             >
@@ -77,7 +78,7 @@ export function GoalProgress({ showFooter }: GoalProgressProps) {
                             y={viewBox.cy}
                             className="fill-foreground text-4xl font-bold"
                           >
-                            {26}%
+                            {progress.toLocaleString()}%
                           </tspan>
                           <tspan
                             x={viewBox.cx}
@@ -87,7 +88,7 @@ export function GoalProgress({ showFooter }: GoalProgressProps) {
                             progress
                           </tspan>
                         </text>
-                      )
+                      );
                     }
                   }}
                 />
@@ -96,14 +97,16 @@ export function GoalProgress({ showFooter }: GoalProgressProps) {
           </ChartContainer>
         </CardContent>
       </div>
-      {showFooter && <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>}
+      {showFooter && (
+        <CardFooter className="flex-col gap-2 text-sm">
+          <div className="flex items-center gap-2 font-medium leading-none">
+            Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          </div>
+          <div className="leading-none text-muted-foreground">
+            Showing total visitors for the last 6 months
+          </div>
+        </CardFooter>
+      )}
     </Card>
-  )
+  );
 }

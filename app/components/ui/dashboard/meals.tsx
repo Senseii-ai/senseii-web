@@ -1,7 +1,7 @@
-import { GoPlusCircle } from "react-icons/go";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../carousel";
 import DashboardCardWrapper from "./dashboard.wrapper";
 import Macros from "./macros";
+import { IconPlus } from "../icons/icons";
 
 interface MealsProps {
   available: boolean
@@ -15,7 +15,7 @@ function MealsNotAvailable() {
 
 export default function Meals({ available }: MealsProps) {
   return (
-    <DashboardCardWrapper showFooter={true} showAddButton={true} icon={<GoPlusCircle />} headerTitle={"Nutrition"} footerText={"movement so far"}>
+    <DashboardCardWrapper showFooter={true} showAddButton={true} icon={<IconPlus />} headerTitle={"Nutrition"} footerText={"movement so far"}>
       {available ?
         <div className="w-10/12 mx-auto">
           <Carousel
