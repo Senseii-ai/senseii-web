@@ -35,7 +35,7 @@ export default function Overview({ description, progress }: OverviewProps) {
       </div>
 
       <div className="md:grid grid-cols-4 flex flex-col gap-x-2 gap-y-2">
-        <div className="col-span-2">
+        <div className="col-span-2 ">
           <CurveChart title="Descipline" />
         </div>
         <div className="col-span-2">
