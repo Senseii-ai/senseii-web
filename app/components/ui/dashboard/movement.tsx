@@ -1,8 +1,8 @@
 import { FaDumbbell, FaWalking } from "react-icons/fa"
-import { GoPlusCircle } from "react-icons/go";
 import { CardTitle } from "../card";
 import { Progress } from "../progress";
 import DashboardCardWrapper from "./dashboard.wrapper";
+import { IconPlus } from "../icons/icons";
 
 interface MovementProps {
   available: boolean
@@ -16,7 +16,7 @@ function MovementNotAvailable() {
 
 export default function Movement({ available }: MovementProps) {
   return (
-    <DashboardCardWrapper showFooter={true} showAddButton={true} icon={<GoPlusCircle />} headerTitle={"Movement"} footerText={"movement so far"}>
+    <DashboardCardWrapper showFooter={true} showAddButton={true} icon={<IconPlus />} headerTitle={"Movement"} footerText={"movement so far"}>
       {!available ?
         <MovementNotAvailable /> : <div className="space-y-8">
           <ProgressItem title="steps" icon={<FaWalking />} value={48} goal={20000} />

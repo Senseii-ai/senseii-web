@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../accordion"
-import { DailyNutritionPlan, MacroNutrients, Meals, MicroNutrients, Weekday } from "@senseii/types";
+import { DailyNutritionPlan, MacroNutrients, MealItems, Meals, MicroNutrients, NutritionPlan } from "@senseii/types";
 import {
   Table,
   TableBody,
@@ -96,19 +96,9 @@ export const dailyMealPlan: DailyNutritionPlan = {
   ]
 }
 
-const days: Weekday[] = ["Monday"]
-
-const weeklyMealPlan = days.map((day) => ({
-  ...dailyMealPlan,
-  day,
-}));
-
-// const mealPlan: INutritionPlan = {
-//   plan: [dailyMealPlan, dailyMealPlan, dailyMealPlan]
-// }
-
 interface MealPlanProps {
   isAvailable: boolean
+  plans: NutritionPlan | null
 }
 
 function MealDropdown({ meal, item }: { meal: DailyNutritionPlan, item: number }) {
@@ -118,8 +108,8 @@ function MealDropdown({ meal, item }: { meal: DailyNutritionPlan, item: number }
         {meal.day}
       </AccordionTrigger>
       <AccordionContent className="space-y-2">
-        <Accordion type="single" collapsible className="w-full">
-          {meal.meals.map((item, index) => (
+        <Accordion type="single" collapsible className="w-full sm:text-sm text-xs">
+          {meal.meals.map((item: Meals, index: number) => (
             <DailyMealCard key={index} meal={item} itemKey={index} />
           ))}
         </Accordion>
@@ -153,16 +143,16 @@ function MealTable({ meal }: { meal: Meals }) {
       </TableHeader>
       <TableBody>
         <TableRow>
-          <TableCell className="font-medium">{meal.food}</TableCell>
+          <TableCell className="">{meal.food}</TableCell>
           <TableCell>
             <MacrosTable items={meal.micros} />
           </TableCell>
           <TableCell>
-            {meal.items.map((item, index) => (
+            {meal.items.map((item: MealItems, index: number) => (
               <div key={index}>
-                <p>
+                {item.item !== "_id" && <p>
                   {item.item}:{item.proportion}
-                </p>
+                </p>}
               </div>
             ))}
           </TableCell>
@@ -185,7 +175,17 @@ function MacrosTable({ items }: { items: MacroNutrients | MicroNutrients }) {
       <div className="">
         {macroArray.map(([key, value]) => (
           <div className="flex gap-x-2" key={value}>
-            {key}: <p className="font-semibold">{value}</p>
+            {key !== "_id"
+              &&
+              <div className="flex  items-center gap-x-2">
+                <p className="">
+                  {key}:
+                </p>
+                <p className="">
+                  {value}
+                </p>
+              </div>
+            }
           </div>
         ))}
       </div>
@@ -193,7 +193,8 @@ function MacrosTable({ items }: { items: MacroNutrients | MicroNutrients }) {
   )
 }
 
-export default function DailyMealPlan({ isAvailable }: MealPlanProps) {
+export default function DailyMealPlan({ isAvailable, plans }: MealPlanProps) {
+  console.log("plans here", plans)
   return (
     <Card className="overflow-y-auto h-full">
       <CardHeader>
@@ -202,9 +203,9 @@ export default function DailyMealPlan({ isAvailable }: MealPlanProps) {
       <CardContent className="space-y-2">
         {isAvailable ?
           <Accordion type="single" collapsible className="w-full">
-            {weeklyMealPlan.map((item, index) => (
+            {plans ? plans?.dailyPlan.plan.map((item: DailyNutritionPlan, index: number) => (
               <MealDropdown meal={item} key={index} item={index} />
-            ))}
+            )) : "plan not created yet"}
           </Accordion>
           :
           <PlanNotAvailable />}

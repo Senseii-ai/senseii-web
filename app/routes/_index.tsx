@@ -9,6 +9,7 @@ import CreateGoalModal from "./create-goal";
 import { BE_ROUTES, httpGet } from "~/lib/http";
 import { getAuth } from "@clerk/remix/ssr.server";
 import { toast } from "~/hooks/use-toast";
+import { NutritionPlan } from "@senseii/types";
 
 export const meta: MetaFunction = () => {
   return [
@@ -16,6 +17,17 @@ export const meta: MetaFunction = () => {
     { name: "description", content: "Welcome to Senseii!" },
   ];
 };
+
+export interface UserGoalItem {
+  goalId: string,
+  userId: string,
+  title: string,
+  chatId: string,
+  description: string,
+  startDate: string,
+  endDate: string,
+  nutritionPlan: NutritionPlan | null
+}
 
 export async function loader(args: LoaderFunctionArgs) {
   const { userId, getToken } = await getAuth(args)
@@ -71,16 +83,6 @@ export function EmptyDashboard() {
   )
 }
 
-export interface UserGoalItem {
-  goalId: string,
-  userId: string,
-  title: string,
-  chatId: string,
-  description: string,
-  startDate: string,
-  endDate: string
-}
-
 export function GoalDashboard({ goals }: { goals: UserGoalItem[] }) {
   const goalSelectors = goals.map((item): ComboboxItem => {
     return {
@@ -93,7 +95,7 @@ export function GoalDashboard({ goals }: { goals: UserGoalItem[] }) {
     <div className="h-full flex flex-col gap-y-5">
       <h1 className="text-4xl font-bold">Dashboard</h1>
       <DashboardNav goalSelectorProps={{ comboboxItems: goalSelectors }} />
-      <TabComponent chatId={goals[0].chatId} />
+      <TabComponent chatId={goals[0].chatId} goals={goals} />
     </div>
   )
 }

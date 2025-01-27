@@ -2,6 +2,7 @@ import { toast } from "~/hooks/use-toast"
 // import { toast } from "~/hooks/use-toast"
 // import { toast } from "sonner"
 import { Card, CardContent, CardFooter, CardHeader } from "../card"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip"
 
 interface DashboardCardWrapperProps {
   headerTitle: string,
@@ -17,7 +18,18 @@ export default function DashboardCardWrapper({ showFooter, showAddButton, header
       <CardHeader className="">
         <div className="flex justify-between">
           <h3 className="text-base font-semibold">{headerTitle}</h3>
-          {showAddButton ? <button onClick={() => toast({ description: "implement chat modal" })} className="text-3xl cursor-pointer font-light">{icon}</button> : ""}
+          {showAddButton ?
+            <Tooltip>
+              <TooltipTrigger>
+                <button
+                  onClick={() => toast({ description: "We do not support this feature as of now." })} className="text-3xl cursor-pointer font-light">
+                  {icon}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Track your daily {headerTitle} in natural language.
+              </TooltipContent>
+            </Tooltip> : ""}
         </div>
       </CardHeader>
       <CardContent className="h-full">
