@@ -8,6 +8,7 @@ import { IconOpenAI } from "../icons/icons";
 import { Link } from "@remix-run/react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip";
 import { UserGoalItem } from "~/routes/_index";
+import SenseiiIcon from "../chat/senseii.icon";
 
 interface TabComponentProps {
   chatId: string
@@ -21,8 +22,8 @@ export default function TabComponent({ chatId, goals }: TabComponentProps) {
         <Tooltip>
           <TooltipTrigger>
             <Link to={`chat/${chatId}`}>
-              <Button size={"default"}>
-                <IconOpenAI />
+              <Button size={"icon"}>
+                <SenseiiIcon />
               </Button>
             </Link>
           </TooltipTrigger>

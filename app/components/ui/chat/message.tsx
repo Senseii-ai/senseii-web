@@ -1,11 +1,12 @@
 import { cn } from "~/lib/utils";
-import { IconOpenAI, IconUser } from "../icons/icons";
+import { IconUser } from "../icons/icons";
 import { MemoizedReactMarkdown } from "./markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import React from "react";
 import { LoadingSpinner } from "../spinner";
 import { Separator } from "../separator";
+import SenseiiIcon from "./senseii.icon";
 
 export function UserMessage({ children }: { children: React.ReactNode }) {
   return (
@@ -43,7 +44,7 @@ export const StreamingBotMessage = ({
   return (
     <div className={cn("group relative flex items-start md:-ml-12", className)}>
       <div className="flex size-[24px] shrink-0 select-none items-center justify-center rounded-md border bg-primary text-primary-foreground shadow-sm">
-        <IconOpenAI />
+        <SenseiiIcon />
       </div>
       <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">
         <AIStateIndicator aiState={aiState} />
@@ -78,7 +79,7 @@ export function BotMessage({
   return (
     <div className={cn("group relative flex items-start md:-ml-12", className)}>
       <div className="flex size-[24px] shrink-0 select-none items-center justify-center rounded-md border bg-primary text-primary-foreground shadow-sm">
-        <IconOpenAI />
+        <SenseiiIcon />
       </div>
       <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">
         <MemoizedReactMarkdown
