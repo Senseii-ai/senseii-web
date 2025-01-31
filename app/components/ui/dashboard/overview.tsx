@@ -38,10 +38,10 @@ export default function Overview({ description, progress, plans }: OverviewProps
 
       <div className="md:grid grid-cols-4 flex flex-col gap-x-2 gap-y-2">
         <div className="col-span-2 ">
-          <CurveChart title="Descipline" />
+          <CurveChart isAvailable={false} title="Descipline" />
         </div>
         <div className="col-span-2">
-          <LinearChart title="Weight" />
+          <LinearChart isAvailable={false} title="Weight" />
         </div>
       </div>
 

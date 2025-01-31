@@ -27,13 +27,13 @@ export default function DashboardNav({ goalSelectorProps: { user, comboboxItems 
           Overview
         </Link>
 
-        <Link
-          to="/profile"
-          className={`${selected === 1 ? "text-primary" : "text-muted-foreground"} text-base font-medium transition-colors hover:text-primary`}
-          onClick={() => handleClick(1)}
-        >
-          Profile
-        </Link>
+        {/* <Link */}
+        {/*   to="/profile" */}
+        {/*   className={`${selected === 1 ? "text-primary" : "text-muted-foreground"} text-base font-medium transition-colors hover:text-primary`} */}
+        {/*   onClick={() => handleClick(1)} */}
+        {/* > */}
+        {/*   Profile */}
+        {/* </Link> */}
       </nav>
     </div>
   )

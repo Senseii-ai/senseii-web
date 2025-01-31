@@ -52,13 +52,15 @@ const chartConfig = {
 
 interface LineChartProps {
   title: string
+  isAvailable: boolean
 }
 
-export function CurveChart({ title }: LineChartProps) {
+export function CurveChart({ title, isAvailable }: LineChartProps) {
   return (
     <Card className="relative">
-      <div className="absolute opacity-95 items-center flex p-0 inset-x-0 w-full justify-center h-full">Real Time progress tracking coming soon.</div>
-      <div className="opacity-10">
+      {!isAvailable && <div className="absolute opacity-95 items-center flex p-0 inset-x-0 w-full justify-center h-full">Real Time progress tracking coming soon.</div>
+      }
+      <div className={` ${!isAvailable && "opacity-10"}`}>
         <CardHeader>
           <CardTitle>{title}</CardTitle>
           <CardDescription>January - June 2024</CardDescription>

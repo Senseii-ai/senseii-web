@@ -4,7 +4,6 @@ import Movement from "./movement";
 import Overview from "./overview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../tabs";
 import { Button } from "../button";
-import { IconOpenAI } from "../icons/icons";
 import { Link } from "@remix-run/react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip";
 import { UserGoalItem } from "~/routes/_index";
