@@ -20,7 +20,7 @@ import { themeSessionResolver } from "./sessions.server";
 import clsx from "clsx";
 import React from "react";
 import { rootAuthLoader } from "@clerk/remix/ssr.server";
-import { ClerkApp } from "@clerk/remix";
+import { ClerkApp, UserButton } from "@clerk/remix";
 import { ModeToggle } from "./components/mode-toggle";
 import { TailwindIndicator } from "./components/ui/tailwind.indicator";
 import { TooltipProvider } from "./components/ui/tooltip";
@@ -118,7 +118,8 @@ function Layout({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <div className="h-full">
-      <div className="absolute top-5 z-20 right-5">
+      <div className="absolute top-5 z-20 right-5 flex items-center gap-x-2">
+        <UserButton />
         <ModeToggle />
       </div>
       <Outlet />

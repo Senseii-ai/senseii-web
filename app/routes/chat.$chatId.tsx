@@ -124,7 +124,7 @@ export default function Chat() {
         <Button
           size={"icon"}
           variant={"outline"}
-          className="fixed bottom-24 right-4 shadow-lg"
+          className="fixed md:bottom-24 bottom-32 right-4 shadow-lg"
           onClick={scrollToBottom}
         >
           <IoIosArrowRoundDown />
