@@ -74,24 +74,6 @@ body {
 /*   } */
 /* } */
 /**/
-@layer base {
-  /* Unordered list (ul) */
-  ul {
-    list-style-type: disc; /* Default bullet points */
-    margin-left: 1.5rem;    /* Indentation for unordered lists */
-  }
-
-  /* Ordered list (ol) */
-  ol {
-    list-style-type: decimal; /* Default numbering */
-    margin-left: 1.5rem;      /* Indentation for ordered lists */
-  }
-
-  /* List items (li) */
-  li {
-    margin-bottom: 0.5rem; /* Spacing between list items */
-  }
-}
 
 @layer base {
   * {
@@ -100,56 +82,4 @@ body {
   body {
     @apply bg-background text-foreground;
   }
-}
-
-h1 {
-    @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
-}
-
-h2 {
-    @apply scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight;
-}
-
-h3 {
-    @apply scroll-m-20 text-2xl font-semibold tracking-tight;
-}
-
-h4 {
-    @apply scroll-m-20 text-xl font-semibold tracking-tight;
-}
-
-h5 {
-    @apply scroll-m-20 text-lg font-semibold tracking-tight;
-}
-
-h6 {
-    @apply scroll-m-20 font-semibold tracking-tight;
-}
-
-p {
-    @apply leading-7;
-}
-
-blockquote {
-    @apply border-l-2 pl-6 italic;
-}
-
-tr {
-    @apply m-0 border-t p-0 even:bg-muted;
-}
-
-th {
-    @apply border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right;
-}
-
-td {
-    @apply border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right;
-}
-
-code {
-    @apply relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold;
-}
-
-small {
-    @apply text-sm font-medium leading-none;
 }
