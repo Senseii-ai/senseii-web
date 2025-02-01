@@ -13,6 +13,15 @@ import { useScrollAnchor } from "~/hooks/use-scroll-anchor";
 import { Button } from "~/components/ui/button";
 import { IoIosArrowRoundDown } from "react-icons/io";
 import { Separator } from "~/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "~/components/ui/breadcrumb"
+
 
 // FIX: Add unique id as well.
 export type ServerMessage = z.infer<typeof serverMessage>;
@@ -62,7 +71,7 @@ export async function action(args: ActionFunctionArgs) {
 }
 
 export default function Chat() {
-  const { messages, title } = useLoaderData<typeof loader>();
+  const { messages } = useLoaderData<typeof loader>();
   const [chatMessages, setChatMessages] = React.useState<ServerMessage[]>(
     messages || []
   );
@@ -76,8 +85,20 @@ export default function Chat() {
   const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } = useScrollAnchor()
   return (
     <div className="w-full md:mt-20 mt-12 bg-background">
-      <div className="fixed z-10 top-0 w-full md:h-14 h-10 items-center bg-background flex justify-center">
-        <h6>{title || "Chat with Senseii"}</h6>
+
+      <div className="fixed z-10 top-0 w-full md:h-12 justify-center h-10 bg-background flex flex-col">
+        <Breadcrumb className="h-full px-5 flex">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Chat</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <Separator />
       </div>
       <div ref={scrollRef} className="overflow-auto max-h-[calc(100vh-10rem)]">
         <div ref={messagesRef}>
